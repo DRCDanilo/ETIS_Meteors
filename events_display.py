@@ -12,6 +12,11 @@ from datetime import datetime
 #To measure the time reading the CSV file
 import time
 
+#To have interactive plots in Ubuntu: see the coordinates of a pixel wih the cursor of the mouse
+import matplotlib
+matplotlib.use('Qt5Agg')
+
+
 #To display an image
 import PIL
 from PIL import Image
@@ -564,7 +569,7 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
 #Import the data file
 # ___________ FOR METEOR 00:29:40 _______________________
 #file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/meteor_002940.csv' # Modify according to the file path
-file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/meteor.csv' # Modify according to the file path
+file_path = '/users/danidelr86/Téléchargements/meteor.csv' # Modify according to the file path
 #file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/recording_2024-12-13_01-01-22_4min03-to-15min.csv' # Modify according to the file path
 #file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/recording_2024-12-13_01-01-22_24min17-to-37min32.csv'
 
@@ -655,6 +660,7 @@ pixelsEvents = np.delete(pixelsEvents, (0), axis = 0)
 ##
 ##displayPixels()
 #displayHistogram()
+print('I´m in Ubunu')
 displayZoneHistogram(20000, 600000, 405, 95, 30, 'Background')
 displayZoneBihistogram(20000, 600000, 405, 95, 30, 'Background')
 plt.show()
