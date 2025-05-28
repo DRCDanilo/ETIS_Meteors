@@ -432,7 +432,7 @@ def displayZoneHistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     mask = events[:, -1] <= timeStop
     selectedEvents = events[mask]
     #Filter events by zone of the image
-    mask = ( selectedEvents[:, 0] >= xCoord ) & (selectedEvents[:, 0] <= xCoord + sizeZone ) & ( selectedEvents[:,1] >= yCoord ) & (selectedEvents[:,1] <= yCoord + sizeZone )
+    mask = ( selectedEvents[:, 0] >= xCoord ) & (selectedEvents[:, 0] <= (xCoord + (sizeZone - 1)) ) & ( selectedEvents[:,1] >= yCoord ) & (selectedEvents[:,1] <= (yCoord + (sizeZone - 1)) )
     selectedEvents = selectedEvents[mask]
 
     #Variable to know the time of the las event
@@ -548,13 +548,15 @@ def directNeighbors(array, numMinEvents, numMinNeighbors):
             if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
                 numNeighbors += 1 # Neighbor number 4
 
-        #Add he pixel if it has the minimum number of neighbors
+        #Add the pixel if it has the minimum number of neighbors
         if( numNeighbors >= numMinNeighbors ):
             outputArray = np.vstack((outputArray, array[i]))
 
+    outputArray = np.delete(outputArray, 0, 0)
     return outputArray
 
-
+#Function to identify if .
+#def isStar(array, numMinEvents, numMinNeighbors):
 
 
 
@@ -566,8 +568,8 @@ def directNeighbors(array, numMinEvents, numMinNeighbors):
 
 #Import the data file
 # ___________ FOR METEOR 00:29:40 _______________________
-#file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/meteor_002940.csv' # Modify according to the file path
-file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
+file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_002940.csv' # Modify according to the file path
+#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
 #file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/recording_2024-12-13_01-01-22_4min03-to-15min.csv' # Modify according to the file path
 #file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/recording_2024-12-13_01-01-22_24min17-to-37min32.csv'
 
@@ -609,7 +611,8 @@ pixelsEvents = np.zeros([1, 5], dtype = int)
 
 
 
-#Loop trhough events (data) array to fill the event matrix and arrays  
+
+#Loop through events (data) array to fill the event matrix and arrays
 for i in range(len(events)):
     
     makePixelsHistogram(events[i,0], events[i,1], events[i,2])
@@ -626,7 +629,38 @@ for i in range(len(events)):
 #Delete the first row of pixelsEvents because is 0,0,0,0,0
 #The idea is to replace the function eventsPerPixel() and the two variables histoPositiveEvents, histoNegativeEvents to have just one
 #varibale with both positive and negative events
-pixelsEvents = np.delete(pixelsEvents, (0), axis = 0)
+pixelsEvents = np.delete(pixelsEvents, 0, 0)
+
+
+
+#Test to filter just the stars and find out if the method works.
+remainPixels = directNeighbors(pixelsEvents, 1, 2)
+remainPixels = filterArray(remainPixels, 5, 3, 1)
+remainPixels = filterArray(remainPixels, np.ceil(np.mean(remainPixels[:,-1])), 3, 1)
+print('The pixels after filtering are : ' , len(remainPixels))
+print('The minimum number of events in the array is : ', min(remainPixels[:,-1]))
+print('The maximum number of events in the array is : ', max(remainPixels[:,-1]))
+print('The average number of events in the array is : ', np.mean(remainPixels[:,-1]))
+print('The possible stars are: \n', remainPixels)
+
+
+#print(remainPixels)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -645,12 +679,7 @@ pixelsEvents = np.delete(pixelsEvents, (0), axis = 0)
 
 #display4Matrix()
 #displayHistoNumEvents(histoNegativeEvents)
-##
-##
-displayPixels()
-#displayHistogram()
-
-
-#displayZoneHistogram(20000, 600000, 405, 95, 30, 'Background')
-#displayZoneBihistogram(20000, 600000, 405, 95, 30, 'Background')
+#displayPixels()
+#displayZoneHistogram(20000, events[-1, -1], 584, 387, 20, 'Background')
+#displayZoneBihistogram(20000, events[-1, -1], 584, 387, 20, 'Background')
 #plt.show()
