@@ -169,7 +169,7 @@ def display4Matrix():
     #print('The minimun number of events in the average matrix after transformation is: ', np.min(AverageMatrix))
 
     
-    vMaxScale = 35
+    vMaxScale = 20
 
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
@@ -308,21 +308,13 @@ def makePixelsHistogram(xCoord, yCoord, polarity):
 
     
 #Function to display desired pixels
-def displayPixels():
+def displayPixels(array):
 
     m = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
-    pixels25_120 = directNeighbors(pixelsEvents, 20, 1)
 
-    pixels25_120 = filterArray(pixels25_120, 30, 3, 1)
-    pixels25_120 = filterArray(pixels25_120, 120, 3, 2)
-
-
-
-    for i in range( len( pixels25_120[:,0] ) ):
-        fillMatrix(m, pixels25_120[i, 0], pixels25_120[i, 1], pixels25_120[i, 4])
-
-    print(pixels25_120)
+    for i in range( len( array[:,0] ) ):
+        fillMatrix(m, array[i, 0], array[i, 1], array[i, 4])
 
     Capella = False
     Jupiter = False
@@ -330,41 +322,42 @@ def displayPixels():
     Procyon = False
     Mars = False
     Pollux = False
-    s = np.where( (pixels25_120[:, 0] == 285) & (pixels25_120[:, 1] == 60) )
-    if( len(pixels25_120[s]) == 1 ):
+    s = np.where( (array[:, 0] == 285) & (array[:, 1] == 60) )
+    if( len(array[s]) == 1 ):
         Capella = True
 
-        
-    s = np.where( (pixels25_120[:, 0] == 530) & (pixels25_120[:, 1] == 91) )
-    if( len(pixels25_120[s]) == 1 ):
+
+    s = np.where( (array[:, 0] == 530) & (array[:, 1] == 91) )
+    if( len(array[s]) == 1 ):
         Jupiter = True
 
 
-    s = np.where( (pixels25_120[:, 0] == 508) & (pixels25_120[:, 1] == 266) )
-    if( len(pixels25_120[s]) == 1 ):
+    s = np.where( (array[:, 0] == 508) & (array[:, 1] == 266) )
+    if( len(array[s]) == 1 ):
         Betelgeuse = True
 
-    s = np.where( (pixels25_120[:, 0] == 392) & (pixels25_120[:, 1] == 439) )
-    if( len(pixels25_120[s]) == 1 ):
+    s = np.where( (array[:, 0] == 392) & (array[:, 1] == 439) )
+    if( len(array[s]) == 1 ):
         Procyon = True
 
-    s = np.where( (pixels25_120[:, 0] == 221) & (pixels25_120[:, 1] == 412) )
-    if( len(pixels25_120[s]) == 1 ):
+    s = np.where( (array[:, 0] == 221) & (array[:, 1] == 412) )
+    if( len(array[s]) == 1 ):
         Mars = True
 
-    s = np.where((pixels25_120[:, 0] == 259) & (pixels25_120[:, 1] == 314))
-    if (len(pixels25_120[s]) == 1):
+    s = np.where((array[:, 0] == 259) & (array[:, 1] == 314))
+    if (len(array[s]) == 1):
         Pollux = True
 
-    
 
     fig1, ax1 = plt.subplots()
    
     pos1 = ax1.imshow(m, cmap = 'cividis_r', interpolation = 'none')
     fig1.colorbar(pos1, ax = ax1, shrink = 0.8)#Colorbar
-    ax1.set_title('Pixels With 25 to 120 Events (positives and negatives)')
+    ax1.set_title('Pixels After Filtering Process')
     ax1.set_xlabel('pixels')
     ax1.set_ylabel('pixels')
+
+    annotatePixels(array, ax1)
     
 
     if( Capella ):
@@ -374,9 +367,9 @@ def displayPixels():
         ax1.annotate('Jupiter', xy=(530, 91), xytext=(530+50, 91+50), arrowprops=dict(facecolor='black', shrink=0.005))
 
     if( Betelgeuse ):
-        ax1.annotate('Betelgeuse', xy=(508, 266), xytext=(508+50, 266+50), arrowprops=dict(facecolor='black', shrink=0.0005))      
+        ax1.annotate('Betelgeuse', xy=(508, 266), xytext=(508+50, 266+50), arrowprops=dict(facecolor='black', shrink=0.0005))
 
-    
+
     if( Procyon ):
         ax1.annotate('Procyon', xy=(392, 439), xytext=(392+50, 439+50), arrowprops=dict(facecolor='black', shrink=0.005))
 
@@ -514,22 +507,26 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
 
 
 #Function to filter pixels by direct neighbors with a x number of events.
-def directNeighbors(array, numMinEvents, numMinNeighbors):
+def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors):
 #The function search in every pixel in the input array, looking for at least one direct neighbor (up, down, left or right)
 #with at least the numMinEVents in any neighbor
 #Parameter array : The array wih the pixels to filter
 #Parameter numMinEVents : The minimum number of events in the neighbors pixel.
-#Parameter numMinNeighbors: The minimum number of neighbors per pixel.
+#Parameter numMinNeighbors : The minimum number of neighbors per pixel.
+#Parameter neighbors : The number of neighbors to look for. If neighbors=4, the function will look for neighbors above,
+#to the right, below and to the left. If neighbors=8, the function will also look for the neighbors in the diagonals.
 
     outputArray = np.zeros([1, 5], dtype = int)
     for i in range(len(array[:,0])) :
         numNeighbors = 0
+
+        #Direct neighbors
         #Neighbor above
         a = np.where(((array[:, 0]) == (array[i, 0])) & ((array[:, 1]) == ((array[i, 1]) -1 ))) #Find a pixel in the coordinates above
         if( len(array[a]) == 1 ):#There is a neighbor above
             if( array[a, 4] >= numMinEvents ):#There is more or equal numMinEvents
                 numNeighbors += 1 #Neighbor number 1
-              
+
         #Neighbor right
         a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == (array[i, 1]))) #Find a pixel in the coordinates to the right
         if (len(array[a]) == 1):  # There is a neighbor to the right
@@ -548,6 +545,34 @@ def directNeighbors(array, numMinEvents, numMinNeighbors):
             if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
                 numNeighbors += 1 # Neighbor number 4
 
+        if ( neighbors == 8 ): #Indirect neighbors
+
+            # Neighbor in the upper right side
+            a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ( (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper right side
+            if (len(array[a]) == 1):  # There is a neighbor in the upper right side
+                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                    numNeighbors += 1  # Indirect neighbor number 1
+
+            # Neighbor in the lower right side
+            a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower right side
+            if (len(array[a]) == 1):  # There is a neighbor to the lower right side
+                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                    numNeighbors += 1  # Indirect neighbor number 2
+
+            # Neighbor in the lower left side
+            a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower left side
+            if (len(array[a]) == 1):  # There is a neighbor to the lower left side
+                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                    numNeighbors += 1  # Indirect neighbor number 3
+
+            # Neighbor in the upper left side
+            a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper left side
+            if (len(array[a]) == 1):  # There is a neighbor to the upper left side
+                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                    numNeighbors += 1  # Indirect neighbor number 4
+
+
+
         #Add the pixel if it has the minimum number of neighbors
         if( numNeighbors >= numMinNeighbors ):
             outputArray = np.vstack((outputArray, array[i]))
@@ -555,10 +580,85 @@ def directNeighbors(array, numMinEvents, numMinNeighbors):
     outputArray = np.delete(outputArray, 0, 0)
     return outputArray
 
-#Function to identify if .
-#def isStar(array, numMinEvents, numMinNeighbors):
+
+# Function to identify if two or more pixels who are direct neighbors, belong to a single star.
+def isStar(array):
+    # The function search in every pixel in the input array, looking for directs neighbors (up, down, left or right)
+    # and identify the pixel with the highest number of events as the star
+    # Parameter array : The array wih the pixels to filter
+
+    outputArray = np.zeros([1, 5], dtype=int)
+    for i in range(len(array[:, 0])):
+        star = True
+        # Neighbor above
+        a = np.where(((array[:, 0]) == (array[i, 0])) & (
+                    (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates above
+        if (len(array[a]) == 1):  # There is a neighbor above
+            if (array[a, 4] > array[i, 4]):  # The neighbor above has more events
+                star = False  # The i pixel is not the star
+
+        # Neighbor right
+        a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & (
+                    (array[:, 1]) == (array[i, 1])))  # Find a pixel in the coordinates to the right
+        if (len(array[a]) == 1):  # There is a neighbor to the right
+            if (array[a, 4] > array[i, 4]):  # The neighbor to the right has more events
+                star = False  # The i pixel is not the star
+
+        # Neighbor below
+        a = np.where(((array[:, 0]) == (array[i, 0])) & (
+                    (array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates below
+        if (len(array[a]) == 1):  # There is a neighbor below
+            if (array[a, 4] > array[i, 4]):  # The neighbor below has more events
+                star = False  # The i pixel is not the star
+
+        # Neighbor to the left
+        a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & (
+                    (array[:, 1]) == (array[i, 1])))  # Find a pixel in the coordinates to the left
+        if (len(array[a]) == 1):  # There is a neighbor to the left
+            if (array[a, 4] > array[i, 4]):  # The neighbor to the left has more events
+                star = False  # The i pixel is not the star
+
+        # Neighbor in the upper right side
+        a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & (
+                    (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper right side
+        if (len(array[a]) == 1):  # There is a neighbor in the upper right side
+            if (array[a, 4] > array[i, 4]):  # The neighbor in the upper right side has more events
+                star = False  # The i pixel is not the star
+
+        # Neighbor in the lower right side
+        a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & (
+                    (array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower right side
+        if (len(array[a]) == 1):  # There is a neighbor in the lower right side
+            if (array[a, 4] > array[i, 4]):  # The neighbor in the lower right side has more events
+                star = False  # The i pixel is not the star
+
+        # Neighbor in the lower left side
+        a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & (
+                    (array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower left side
+        if (len(array[a]) == 1):  # There is a neighbor in the lower left side
+            if (array[a, 4] > array[i, 4]):  # The neighbor in the lower left side has more events
+                star = False  # The i pixel is not the star
+
+        # Neighbor in the upper left side
+        a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & (
+                    (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper left side
+        if (len(array[a]) == 1):  # There is a neighbor in the upper left side
+            if (array[a, 4] > array[i, 4]):  # The neighbor in the upper left side has more events
+                star = False  # The i pixel is not the star
+
+        if (star):
+            outputArray = np.vstack((outputArray, array[i]))  # Add the pixel to the output array
+
+    outputArray = np.delete(outputArray, 0, 0)  # Delete the first row of the array because it's 0 0 0 0 0
+    return outputArray
 
 
+#Function to annotate - make more visible some pixels
+def annotatePixels(array, ax):
+    #The function annotates all the pixels inside the array
+
+    for i in range( len( array[:,0] ) ) :
+        ax.annotate(str(i), xy=(array[i,0], array[i,1]), xytext=(array[i,0]+15, array[i,1]+15), arrowprops=dict(facecolor='black', shrink=0.005))
 
 
 
@@ -631,23 +731,30 @@ for i in range(len(events)):
 #varibale with both positive and negative events
 pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
+#display4Matrix()
 
-
-#Test to filter just the stars and find out if the method works.
-remainPixels = directNeighbors(pixelsEvents, 1, 2)
+# # #Test to filter just the stars and find out if the method works.
+remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
 remainPixels = filterArray(remainPixels, 5, 3, 1)
-remainPixels = filterArray(remainPixels, np.ceil(np.mean(remainPixels[:,-1])), 3, 1)
-print('The pixels after filtering are : ' , len(remainPixels))
-print('The minimum number of events in the array is : ', min(remainPixels[:,-1]))
-print('The maximum number of events in the array is : ', max(remainPixels[:,-1]))
-print('The average number of events in the array is : ', np.mean(remainPixels[:,-1]))
+mean = np.ceil(np.mean(remainPixels[:, -1]))
+print('The average number of events in the array is : ', mean)
+remainPixels = filterArray(remainPixels, mean, 3, 1)
+remainPixels = isStar(remainPixels)
+print('There are ', len(remainPixels), 'possible stars')
 print('The possible stars are: \n', remainPixels)
+displayPixels(remainPixels)
 
 
-#print(remainPixels)
 
 
 
+
+
+
+
+# print('The pixels after filtering are :', len(remainPixels))
+# print('The minimum number of events in the array is : ', min(remainPixels[:,-1]))
+# print('The maximum number of events in the array is : ', max(remainPixels[:,-1]))
 
 
 
