@@ -43,7 +43,7 @@ def saveImage ():
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
     fileImgName = dataName + '_' + actualDataTime + '.png'
 
-    save_folder = "/users/danidelr86/Téléchargements/ETIS_stars/images/22h19_meteor"
+    save_folder = "/users/danidelr86/Téléchargements/ETIS_stars/images/article_20241213T003019"
 
     full_path = os.path.join(save_folder, fileImgName)
     
@@ -169,7 +169,7 @@ def display4Matrix():
     #print('The minimun number of events in the average matrix after transformation is: ', np.min(AverageMatrix))
 
     
-    vMaxScale = 20
+    vMaxScale = 35
 
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
@@ -431,7 +431,8 @@ def displayZoneHistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     #Variable to know the time of the las event
     timeLastEvent = selectedEvents[-1,-1]
     #Build an array with the bins for the histogram
-    xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
+    #xbins = np.arange(0, (timeLastEvent + binWidth), binWidth) # This line works ok for the histogram until the time of last event
+    xbins = np.arange(0, timeStop, binWidth) # This line is a test to have the histogram until the time stop no matter the presence of events
 
     fig, ax = plt.subplots()
     ax.hist(selectedEvents[:,-1], bins=xbins, edgecolor = 'black')
@@ -467,13 +468,14 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     mask = events[:, -1] <= timeStop
     selectedEvents = events[mask]
     #Filter events by zone of the image
-    mask = ( selectedEvents[:, 0] >= xCoord ) & (selectedEvents[:, 0] <= xCoord + sizeZone ) & ( selectedEvents[:,1] >= yCoord ) & (selectedEvents[:,1] <= yCoord + sizeZone )
+    mask = ( selectedEvents[:, 0] >= xCoord ) & (selectedEvents[:, 0] <= (xCoord + (sizeZone - 1)) ) & ( selectedEvents[:,1] >= yCoord ) & (selectedEvents[:,1] <= (yCoord + (sizeZone - 1)) )
     selectedEvents = selectedEvents[mask]
 
     #Variable to know the time of the las event
     timeLastEvent = selectedEvents[-1,-1]
     #Build an array with the bins for the histogram
-    xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
+    #xbins = np.arange(0, (timeLastEvent + binWidth), binWidth) # This line works ok for the histogram until the time of last event
+    xbins = np.arange(0, timeStop, binWidth) # This line is a test to have the histogram until the time stop no matter the presence of events
     
     
     #Mask for positive events
@@ -490,8 +492,8 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
 
     #Plot the data (positive and negative) along the x axis
     #plot the xdata locations on the x axis:
-    #ax.plot(selectedEvents[:,-1][positiveMask], 0*selectedEvents[:,-1][positiveMask], '+', c = 'g', label = 'Positive Data Points')
-    #ax.plot(selectedEvents[:,-1][negativeMask], 0*selectedEvents[:,-1][negativeMask], 'o', c = 'k', label = 'Negative Data Points')
+    ax.plot(selectedEvents[:,-1][positiveMask], 0*selectedEvents[:,-1][positiveMask], '+', c = 'g', label = 'Positive Data Points')
+    ax.plot(selectedEvents[:,-1][negativeMask], 0*selectedEvents[:,-1][negativeMask], 'o', c = 'k', label = 'Negative Data Points')
 
     plt.title(title + " Bi-Histogram Events")
     plt.grid(visible = True, color = 'r')
@@ -662,16 +664,63 @@ def annotatePixels(array, ax):
 
 
 
+# Function to analyze along the time an array and determine if here is continuity of events.
+def continuity(array, e):
+# The function look for continuity in the array, that means look for a number of events in the array. The number of events is determined by the parameter e.
+# Parameter array : The array to analyze
+# Parameter e : The minimum number of events in the array to have continuity
+
+    if( len(array) >= e ):
+        return True
+    return None
+
+
+# Function to identify a star looking for the continuity of the events in a time interval.
+def continuousStar(array, interval, timeStop, level):
+#Parameter array : The array where the possible stars are
+#Parameter interval : The time interval to evaluate the continuity of the events.
+#Parameter timeStop : The time limit to look for the continuity of the events
+#Parameter level : The minimum number of evidences to consider a pixel a star
+
+    windows = np.ceil(timeStop / interval) # Number of time windows to make the filtering
+    outputArray = np.zeros([1, 5], dtype = int) # Output array
+
+    for i in range( len (array[:, 0]) ): # Go through the input array
+        index = np.where( ( events[:, 0] == array[i, 0] ) & ( events[:, 1] == array[i, 1] ) ) # Find pixel events in all the events data
+        onePixelIndexs = np.array(index) # Convert to array the tuple with the indices of the pixel events
+        onePixelEvents = np.take(events, onePixelIndexs, axis=0) # Extract only the events of the pixel from all events data
+        onePixelEvents = np.reshape(onePixelEvents,(onePixelEvents.shape[1],onePixelEvents.shape[2])) # Build the array (nx4) of the pixel events
+        onePixelEvents[: , -1] -= min(onePixelEvents[:,  -1]) # Start the pixel events from t = 0
+
+        proofs = 0
+        for j in range(int(windows)): # Go through the windows or time intervals
+            mask = ( ( (onePixelEvents[:, -1]) >= (j * interval) ) & ( (onePixelEvents[:, -1]) < ( (j + 1) * interval ) ) ) # Select only the events in the time interval
+            pixelsSliced = onePixelEvents[mask] # Array with the events in the time interval
+            # Function to analyze the pixels in the time interval
+            mark = continuity(pixelsSliced, 2)
+            if mark: # If the array in the time interval corresponds to a star
+                proofs = proofs + 1
+        if proofs >= level:
+            outputArray = np.vstack((outputArray, array[i]))
+
+    outputArray = np.delete(outputArray, 0, 0)
+    return outputArray
+
+
+
+
+
+
+
 #################################################################################################################################################
 #Main Program
 #################################################################################################################################################
 
 #Import the data file
 # ___________ FOR METEOR 00:29:40 _______________________
-file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_002940.csv' # Modify according to the file path
+file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
 #file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
-#file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/recording_2024-12-13_01-01-22_4min03-to-15min.csv' # Modify according to the file path
-#file_path = 'D:/Documentos pc Acer/Descargas pc Acer/ETIS/dataFiles/recording_2024-12-13_01-01-22_24min17-to-37min32.csv'
+
 
 #Message text
 ##dataName = file_path[55:-4]
@@ -687,11 +736,25 @@ with open(file_path, 'r') as csv_file:#Read the file
     #print(end - start)#To count the time to read the file. Delete this
     events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
 
+
+#CODE TO TEST FILTERING. AS IT IS LONGER THANT THE REFERENCE DATA, IT IS NECESSARY TO HAVE THE SAME TIME INTERVAL
+#filter the file by time
+mask = events[:, -1] <= 1461730
+events = events[mask]
+events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
+print('Already filered by time')
+print('The first event is : ', events[0])
+print('The last event is : ', events[-1])
+print('The total time is ' , events[-1,-1]-events[0,-1])
+
+
+
 #Size of the image/matrix
 numPixelsX = max(events[ :, 0])
 numPixelsY = max(events[ :, 1])
 print('The number of pixels in x is', numPixelsX + 1)
 print('The number of pixels in y is', numPixelsY + 1)
+
 
 
 #Matrix for events
@@ -703,12 +766,11 @@ print('Tha amount of event data is:',len(events))
 
 
 
+
 #Array to count the events per pixel. nx5 = [xCoord, yCoord, positiveEvents, negativeEvents, totalEvents]
 #The idea is to replace the function eventsPerPixel() and the two variables histoPositiveEvents, histoNegativeEvents to have just one
 #varibale with both positive and negative events
 pixelsEvents = np.zeros([1, 5], dtype = int)
-
-
 
 
 
@@ -731,18 +793,41 @@ for i in range(len(events)):
 #varibale with both positive and negative events
 pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
-#display4Matrix()
+
+# remainPixels = directNeighbors(pixelsEvents, 3, 1, 4)
+# remainPixels = filterArray(remainPixels, 30, 3, 1)
+# remainPixels = filterArray(remainPixels, 120, 3, 2)
+# remainPixels = isStar(remainPixels)
+#
+# print('There are ', len(remainPixels), 'possible stars')
+# print('The possible stars are: \n', remainPixels)
+# displayPixels(remainPixels)
+
+
+
+
+
+
 
 # # #Test to filter just the stars and find out if the method works.
-remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
-remainPixels = filterArray(remainPixels, 5, 3, 1)
-mean = np.ceil(np.mean(remainPixels[:, -1]))
-print('The average number of events in the array is : ', mean)
-remainPixels = filterArray(remainPixels, mean, 3, 1)
-remainPixels = isStar(remainPixels)
-print('There are ', len(remainPixels), 'possible stars')
-print('The possible stars are: \n', remainPixels)
-displayPixels(remainPixels)
+# remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
+# remainPixels = filterArray(remainPixels, 5, 3, 1)
+#
+#
+# # mean = np.ceil(np.mean(remainPixels[:, -1]))
+# # print('The average number of events in the array is : ', mean)
+# # remainPixels = filterArray(remainPixels, mean, 3, 1)
+#
+# remainPixels = continuousStar(remainPixels, 20000, 600000, 2)
+#
+#
+# remainPixels = isStar(remainPixels)
+#
+#
+#
+# print('There are ', len(remainPixels), 'possible stars')
+# print('The possible stars are: \n', remainPixels)
+# displayPixels(remainPixels)
 
 
 
@@ -784,9 +869,9 @@ displayPixels(remainPixels)
 ##print('pixelCapella: ', pixelsEvents[n])
 
 
-#display4Matrix()
+display4Matrix()
 #displayHistoNumEvents(histoNegativeEvents)
 #displayPixels()
-#displayZoneHistogram(20000, events[-1, -1], 584, 387, 20, 'Background')
-#displayZoneBihistogram(20000, events[-1, -1], 584, 387, 20, 'Background')
-#plt.show()
+# displayZoneHistogram(20000, 600000, 391, 438, 3, 'Background')
+# displayZoneBihistogram(20000, 600000, 391, 438, 3, 'Background')
+# plt.show()
