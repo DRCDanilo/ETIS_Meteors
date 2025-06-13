@@ -1,11 +1,12 @@
 import csv #To read the data in the .csv file
 import numpy as np #To work with numpy
-from events_display import *
+from matplotlib import pyplot as plt #To work with Matplotlib and display images and figures
+from events_display import makePixelsHistogram, CountingEventsPerPixel, displayZoneHistogram, displayZoneBihistogram
 
 #######################################################################################################################
 #Import the data file
-file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
-#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
+#file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
+file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
 
 with open(file_path, 'r') as csv_file:#Read the file
     reader = csv.reader(csv_file)
@@ -56,6 +57,6 @@ pixelsEvents = np.delete(pixelsEvents, 0, 0)
 #######################################################################################################################
 
 # display4Matrix()
-displayZoneHistogram(20000, 600000, 391, 438, 3, 'Background')
-displayZoneBihistogram(20000, 600000, 391, 438, 3, 'Background')
+displayZoneHistogram(20000, 600000, 284, 59, 3, 'Capella')
+displayZoneBihistogram(20000, 600000, 284, 59, 3, 'Capella')
 plt.show()

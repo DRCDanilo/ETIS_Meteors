@@ -249,62 +249,44 @@ def displayHistoNumEvents(arrayEvents):
     ax.annotate('Events Bin Width: ' + str(binWidth), xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
 
-#Function to make an array with the pixels and the number of events
-#The idea is to replace the function eventsPerPixel() and the two variables histoPositiveEvents, histoNegativeEvents to have just one
-#varibale with both positive and negative events
-def makePixelsHistogram(xCoord, yCoord, polarity):
+#Function to make an array with all the pixels in the input data file, with the total number of events (positives and
+#negatives. The output is an array with all the n pixels in the data input, and their total events number for all the
+#file duration.
+def makePixelsHistogram(xCoord, yCoord, polarity, array):
+#Parameter xCoord : The coordinate x of the pixel.
+#Parameter yCoord : The coordinate y of the pixel.
+#Parameter polarity : The polarity of the event.
+#Parameter array : The array to store all the pixels and their events.
 
-    global pixelsEvents
-    flag = True
-    if( xCoord in pixelsEvents[:,0] ):
-        if ( yCoord in pixelsEvents[:,1] ):
-##            for u in range(len(pixelsEvents[:,0])):
-##                if( (pixelsEvents[u,0] == xCoord) & (pixelsEvents[u,1] == yCoord) ):
-##                    
-##                    if(polarity == 1):
-##                        pixelsEvents[u,2] += 1
-##                        pixelsEvents[u,4] += 1
-##                        flag = False
-##                        break
-##                    
-##                    if(polarity == 0):
-##                        pixelsEvents[u,3] += 1
-##                        pixelsEvents[u,4] += 1
-##                        flag = False
-##                        break
-##            
-##            if(flag):
-##                if(polarity == 1):
-##                    pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 1, 0, 1])))
-##                if(polarity == 0):
-##                    pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 0, 1, 1])))
-            index = np.where( (pixelsEvents[:,0] == xCoord) & (pixelsEvents[:,1] == yCoord) )
-            if( len( pixelsEvents[index] ) == 1 ):
+    if( xCoord in array[:,0] ): #Look for the coordinate x of the pixel in the array
+        if ( yCoord in array[:,1] ): #Look for the coordinate y of the pixel in the array
+
+            index = np.where( (array[:,0] == xCoord) & (array[:,1] == yCoord) ) #Get the position on the array
+            if( len( array[index] ) == 1 ): #Check the position on the array
                 if(polarity == 1):
-                    pixelsEvents[index,2] += 1
-                    pixelsEvents[index,4] += 1
+                    array[index,2] += 1
+                    array[index,4] += 1
                     
                 if(polarity == 0):
-                    pixelsEvents[index,3] += 1
-                    pixelsEvents[index,4] += 1
+                    array[index,3] += 1
+                    array[index,4] += 1
             else:
                 if(polarity == 1):
-                    pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 1, 0, 1])))
+                    array = np.vstack((array, np.array([xCoord, yCoord, 1, 0, 1]))) #Add the pixel to the array
                 if(polarity == 0):
-                    pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 0, 1, 1])))
-                        
-                
+                    array = np.vstack((array, np.array([xCoord, yCoord, 0, 1, 1]))) #Add the pixel to the array
         else:
             if(polarity == 1):
-                pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 1, 0, 1])))
+                array = np.vstack((array, np.array([xCoord, yCoord, 1, 0, 1]))) #Add the pixel to the array
             if(polarity == 0):
-                pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 0, 1, 1])))
-                
+                array = np.vstack((array, np.array([xCoord, yCoord, 0, 1, 1]))) #Add the pixel to the array
     else:
         if(polarity == 1):
-            pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 1, 0, 1])))
+            array = np.vstack((array, np.array([xCoord, yCoord, 1, 0, 1]))) #Add the pixel to the array
         if(polarity == 0):
-            pixelsEvents = np.vstack((pixelsEvents, np.array([xCoord, yCoord, 0, 1, 1])))
+            array = np.vstack((array, np.array([xCoord, yCoord, 0, 1, 1]))) #Add the pixel to the array
+
+    return array
 
     
 #Function to display desired pixels
@@ -718,8 +700,8 @@ def continuousStar(array, interval, timeStop, level):
 
 #Import the data file
 # ___________ FOR METEOR 00:29:40 _______________________
-file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
-#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
+#file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
+file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
 
 
 #Message text
@@ -737,13 +719,14 @@ with open(file_path, 'r') as csv_file:#Read the file
 
 #CODE TO TEST FILTERING. AS IT IS LONGER THANT THE REFERENCE DATA, IT IS NECESSARY TO HAVE THE SAME TIME INTERVAL
 #filter the file by time
-mask = events[:, -1] <= 1461730
-events = events[mask]
-events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
-print('Already filered by time')
-print('The first event is : ', events[0])
-print('The last event is : ', events[-1])
-print('The total time is ' , events[-1,-1]-events[0,-1])
+if ( events[-1,-1] > 1461730 ) :
+    mask = events[:, -1] <= 1461730
+    events = events[mask]
+    events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
+    print('Already filered by time')
+    print('The first event is : ', events[0])
+    print('The last event is : ', events[-1])
+    print('The total time is ' , events[-1,-1]-events[0,-1])
 
 
 
@@ -759,23 +742,15 @@ print('The number of pixels in y is', numPixelsY + 1)
 PositiveEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 NegativeEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
-  
-
-
-
 
 
 #Array to count the events per pixel. nx5 = [xCoord, yCoord, positiveEvents, negativeEvents, totalEvents]
-#The idea is to replace the function eventsPerPixel() and the two variables histoPositiveEvents, histoNegativeEvents to have just one
-#varibale with both positive and negative events
 pixelsEvents = np.zeros([1, 5], dtype = int)
-
-
 
 #Loop through events (data) array to fill the event matrix and arrays
 for i in range(len(events)):
-    
-    makePixelsHistogram(events[i,0], events[i,1], events[i,2])
+
+    pixelsEvents = makePixelsHistogram(events[i,0], events[i,1], events[i,2], pixelsEvents)
 
     if (events[i,2] == 1):
         CountingEventsPerPixel(PositiveEventsMatrix, events[i,0], events[i,1])
@@ -783,12 +758,7 @@ for i in range(len(events)):
     elif (events[i,2] == 0):
         CountingEventsPerPixel(NegativeEventsMatrix, events[i,0], events[i,1])
 
-
-
-
 #Delete the first row of pixelsEvents because is 0,0,0,0,0
-#The idea is to replace the function eventsPerPixel() and the two variables histoPositiveEvents, histoNegativeEvents to have just one
-#varibale with both positive and negative events
 pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
 
@@ -804,47 +774,16 @@ pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
 
 
-
-
-
 # # #Test to filter just the stars and find out if the method works.
-# remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
-# remainPixels = filterArray(remainPixels, 5, 3, 1)
-#
-#
-# # mean = np.ceil(np.mean(remainPixels[:, -1]))
-# # print('The average number of events in the array is : ', mean)
-# # remainPixels = filterArray(remainPixels, mean, 3, 1)
-#
-# remainPixels = continuousStar(remainPixels, 20000, 600000, 2)
-#
-#
-# remainPixels = isStar(remainPixels)
-#
-#
-#
-# print('There are ', len(remainPixels), 'possible stars')
-# print('The possible stars are: \n', remainPixels)
-# displayPixels(remainPixels)
-
-
-
-
-
-
-
-
-
-# print('The pixels after filtering are :', len(remainPixels))
-# print('The minimum number of events in the array is : ', min(remainPixels[:,-1]))
-# print('The maximum number of events in the array is : ', max(remainPixels[:,-1]))
-
-
-
-
-
-
-
+remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
+remainPixels = filterArray(remainPixels, 5, 3, 1)
+mean = np.ceil(np.mean(remainPixels[:, -1]))
+print('The average number of events in the array is : ', mean)
+remainPixels = filterArray(remainPixels, mean, 3, 1)
+remainPixels = isStar(remainPixels)
+print('There are ', len(remainPixels), 'possible stars')
+print('The possible stars are: \n', remainPixels)
+displayPixels(remainPixels)
 
 
 
@@ -869,7 +808,7 @@ pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
 #display4Matrix()
 #displayHistoNumEvents(histoNegativeEvents)
-#displayPixels()
-# displayZoneHistogram(20000, 600000, 391, 438, 3, 'Background')
-# displayZoneBihistogram(20000, 600000, 391, 438, 3, 'Background')
+
+# displayZoneHistogram(20000, 600000, 284, 59, 3, 'Capella')
+# displayZoneBihistogram(20000, 600000, 284, 59, 3, 'Capella')
 # plt.show()
