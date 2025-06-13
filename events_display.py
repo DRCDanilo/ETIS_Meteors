@@ -731,9 +731,7 @@ file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_0
 #start = time.time()#To count the time to read the file. Delete this
 with open(file_path, 'r') as csv_file:#Read the file
     reader = csv.reader(csv_file)
-    events = np.array(list(reader), dtype=int)#Originally, dtype=float, I changed to int because there was an error trying 
-    #end = time.time()#To count the time to read the file. Delete this
-    #print(end - start)#To count the time to read the file. Delete this
+    events = np.array(list(reader), dtype=int)#Originally, dtype=float, I changed to int because there was an error trying
     events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
 
 
@@ -762,7 +760,7 @@ PositiveEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 NegativeEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
   
-print('Tha amount of event data is:',len(events))
+
 
 
 
@@ -869,7 +867,7 @@ pixelsEvents = np.delete(pixelsEvents, 0, 0)
 ##print('pixelCapella: ', pixelsEvents[n])
 
 
-display4Matrix()
+#display4Matrix()
 #displayHistoNumEvents(histoNegativeEvents)
 #displayPixels()
 # displayZoneHistogram(20000, 600000, 391, 438, 3, 'Background')
