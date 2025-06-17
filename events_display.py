@@ -381,15 +381,17 @@ def fillMatrix (m, xCoord, yCoord, value):#m: matrix to fill. xCoord: coordinate
 def filterArray(array, value, eventType, condition):
 #Parameter array: Array to filter
 #Parameter value: Value use to filter
-#Parameter eventType : Choose 1 to filter positive events, 2 to filter negative events, 3 to filter total events
-#Parameter condition: Choose 1 to filter greather than (>) value, choose 2 to filter less than (<) value
+#Parameter eventType : Choose 1 to filter positive events, 2 to filter negative events, 3 to filter total events. The
+#function filter the column number eventType+1, so if I want to filter the events in the column 6 of the array, Python
+# indexs start at 0, so the parameter eventType would be 4.
+#Parameter condition: Choose 1 to filter greater than (>) value, choose 2 to filter less than (<) value
 
     if(condition == 1):
-        mask = array[:, eventType+1] > value
+        mask = array[:, eventType + 1 ] > value
         return array[mask]
         
     if (condition == 2):
-        mask = array[:, eventType+1] < value
+        mask = array[:, eventType + 1 ] < value
         return array[mask]
 
 #Function to display histogram with parameters as time and zone of the image
@@ -659,10 +661,10 @@ def continuity(array, e):
 
 # Function to identify a star looking for the continuity of the events in a time interval.
 def continuousStar(array, interval, timeStop, level):
-#Parameter array : The array where the possible stars are
+#Parameter array : The array where the possible stars are.
 #Parameter interval : The time interval to evaluate the continuity of the events.
-#Parameter timeStop : The time limit to look for the continuity of the events
-#Parameter level : The minimum number of evidences to consider a pixel a star
+#Parameter timeStop : The time limit to look for the continuity of the events.
+#Parameter level : The minimum number of evidences to consider a pixel a star.
 
     windows = np.ceil(timeStop / interval) # Number of time windows to make the filtering
     outputArray = np.zeros([1, 5], dtype = int) # Output array
@@ -689,8 +691,25 @@ def continuousStar(array, interval, timeStop, level):
     return outputArray
 
 
+# Function to calculate the number of events per second or per a determined amount of time, of one pixel.
+def eventsByTime(numTotalEvents, totalTimeData, unitTime):
+# Parameter numTotalEvents : The total number of events of the pixel.
+# Parameter totalTimeData : The total duration time of the data.
+# Parameter unitTime : The unit time for the reference in microseconds.
+
+    eventsPerTime = ( unitTime * numTotalEvents ) / ( totalTimeData )
+    return eventsPerTime
 
 
+# Function to add the number of events per second or per a determined amount of time, to an array of pixels.
+def addEventsByTime(array, unitOfTime):
+# Parameter array : The array with pixels to add their number of events per amount of time.
+# Parameter unitOfTime : The unit of time for the reference.
+
+    for i in range( len( array ) ):
+        numToAdd = eventsByTime( array[i, 4], timeData, unitOfTime)
+        array[i, 5] = numToAdd
+    return array
 
 
 
@@ -729,19 +748,20 @@ if ( events[-1,-1] > 1461730 ) :
     print('The total time is ' , events[-1,-1]-events[0,-1])
 
 
-
 #Size of the image/matrix
 numPixelsX = max(events[ :, 0])
 numPixelsY = max(events[ :, 1])
 print('The number of pixels in x is', numPixelsX + 1)
 print('The number of pixels in y is', numPixelsY + 1)
 
+#Total time of the data
+timeData = events[-1, -1]
+print('The total time is ' , events[-1, -1])
 
 
 #Matrix for events
 PositiveEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 NegativeEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
-
 
 
 #Array to count the events per pixel. nx5 = [xCoord, yCoord, positiveEvents, negativeEvents, totalEvents]
@@ -758,57 +778,47 @@ for i in range(len(events)):
     elif (events[i,2] == 0):
         CountingEventsPerPixel(NegativeEventsMatrix, events[i,0], events[i,1])
 
+
 #Delete the first row of pixelsEvents because is 0,0,0,0,0
 pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
+#Add a column for the number of events per time unit (i.e. events x second)
+pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = int)))  #Add the pixel to the array
 
-# remainPixels = directNeighbors(pixelsEvents, 3, 1, 4)
-# remainPixels = filterArray(remainPixels, 30, 3, 1)
-# remainPixels = filterArray(remainPixels, 120, 3, 2)
+
+
+# # #Test to filter just the stars and find out if the method works.
+# remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
+# remainPixels = filterArray(remainPixels, 5, 3, 1)
+# mean = np.ceil(np.mean(remainPixels[:, -1]))
+# print('The average number of events in the array is : ', mean)
+# remainPixels = filterArray(remainPixels, mean, 3, 1)
 # remainPixels = isStar(remainPixels)
-#
 # print('There are ', len(remainPixels), 'possible stars')
 # print('The possible stars are: \n', remainPixels)
 # displayPixels(remainPixels)
 
 
-
-
-# # #Test to filter just the stars and find out if the method works.
-remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
-remainPixels = filterArray(remainPixels, 5, 3, 1)
-mean = np.ceil(np.mean(remainPixels[:, -1]))
-print('The average number of events in the array is : ', mean)
-remainPixels = filterArray(remainPixels, mean, 3, 1)
-remainPixels = isStar(remainPixels)
-print('There are ', len(remainPixels), 'possible stars')
-print('The possible stars are: \n', remainPixels)
-displayPixels(remainPixels)
-
-
-
-
-
-
-
-
-
-#Verify the number of evets in a pixel
-##n = np.where( (pixelsEvents[:,0] == 285) & (pixelsEvents[:,1] == 60) )
-##print('pixelCapella: ', pixelsEvents[n])
-##n = np.where( (pixelsEvents[:,0] == 530) & (pixelsEvents[:,1] == 91) )
-##print('pixelCapella: ', pixelsEvents[n])
-##n = np.where( (pixelsEvents[:,0] == 508) & (pixelsEvents[:,1] == 266) )
-##print('pixelCapella: ', pixelsEvents[n])
-##n = np.where( (pixelsEvents[:,0] == 392) & (pixelsEvents[:,1] == 439) )
-##print('pixelCapella: ', pixelsEvents[n])
-##n = np.where( (pixelsEvents[:,0] == 221) & (pixelsEvents[:,1] == 412) )
-##print('pixelCapella: ', pixelsEvents[n])
-
-
 #display4Matrix()
-#displayHistoNumEvents(histoNegativeEvents)
+
 
 # displayZoneHistogram(20000, 600000, 284, 59, 3, 'Capella')
 # displayZoneBihistogram(20000, 600000, 284, 59, 3, 'Capella')
 # plt.show()
+
+###############################################
+#TEST FOR THE NUMBER OF EVENTS PER UNIT OF TIME
+###############################################
+
+pixelsEvents = addEventsByTime(pixelsEvents, 1000000)
+
+remainPixels = filterArray(pixelsEvents, 2, 4, 1)
+remainPixels = directNeighbors(remainPixels, 1, 3, 8)
+print('ff')
+
+
+
+# capella = np.where( ( pixelsEvents[:,0] == 632 ) & ( pixelsEvents[:,1] == 452 ) )
+# print('Background es :', pixelsEvents[capella])
+# eps = eventsByTime(pixelsEvents[capella, 4], timeData, 500000)
+# print('Background has ', eps, ' events per second')
