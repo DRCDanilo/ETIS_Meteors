@@ -493,7 +493,7 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
 
 
 #Function to filter pixels by direct neighbors with a x number of events.
-def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors):
+def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors, numColumn):
 #The function search in every pixel in the input array, looking for at least one direct neighbor (up, down, left or right)
 #with at least the numMinEVents in any neighbor
 #Parameter array : The array wih the pixels to filter
@@ -501,8 +501,10 @@ def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors):
 #Parameter numMinNeighbors : The minimum number of neighbors per pixel.
 #Parameter neighbors : The number of neighbors to look for. If neighbors=4, the function will look for neighbors above,
 #to the right, below and to the left. If neighbors=8, the function will also look for the neighbors in the diagonals.
+#Parameter numColumn : The number of column in the array to look for the events. i.e. 4=total events, 5=events x timeUnit
 
-    outputArray = np.zeros([1, 5], dtype = int)
+    #outputArray = np.zeros([1, 5], dtype = int) #Output array : xCoord, yCoord, positiEVents, negatiEvents, totalEvents, events x timeUnit
+    outputArray = np.zeros([1, array.shape[1]], dtype = int) #Output array : xCoord, yCoord, positiEVents, negatiEvents, totalEvents, events x timeUnit
     for i in range(len(array[:,0])) :
         numNeighbors = 0
 
@@ -510,25 +512,25 @@ def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors):
         #Neighbor above
         a = np.where(((array[:, 0]) == (array[i, 0])) & ((array[:, 1]) == ((array[i, 1]) -1 ))) #Find a pixel in the coordinates above
         if( len(array[a]) == 1 ):#There is a neighbor above
-            if( array[a, 4] >= numMinEvents ):#There is more or equal numMinEvents
+            if( array[a, numColumn] >= numMinEvents ):#There is more or equal numMinEvents
                 numNeighbors += 1 #Neighbor number 1
 
         #Neighbor right
         a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == (array[i, 1]))) #Find a pixel in the coordinates to the right
         if (len(array[a]) == 1):  # There is a neighbor to the right
-            if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+            if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
                 numNeighbors += 1 # Neighbor number 2
 
         # Neighbor below
         a = np.where( (  (array[:, 0])  ==  (array[i, 0])  ) & (  (array[:, 1])  ==  ((array[i, 1]) + 1)  ) ) # Find a pixel in the coordinates below
         if (len(array[a]) == 1):  # There is a neighbor below
-            if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+            if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
                 numNeighbors += 1 # Neighbor number 3
 
         # Neighbor to the left
         a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == (array[i, 1])))  # Find a pixel in the coordinates below
         if (len(array[a]) == 1):  # There is a neighbor to the left
-            if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+            if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
                 numNeighbors += 1 # Neighbor number 4
 
         if ( neighbors == 8 ): #Indirect neighbors
@@ -536,25 +538,25 @@ def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors):
             # Neighbor in the upper right side
             a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ( (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper right side
             if (len(array[a]) == 1):  # There is a neighbor in the upper right side
-                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
                     numNeighbors += 1  # Indirect neighbor number 1
 
             # Neighbor in the lower right side
             a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower right side
             if (len(array[a]) == 1):  # There is a neighbor to the lower right side
-                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
                     numNeighbors += 1  # Indirect neighbor number 2
 
             # Neighbor in the lower left side
             a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower left side
             if (len(array[a]) == 1):  # There is a neighbor to the lower left side
-                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
                     numNeighbors += 1  # Indirect neighbor number 3
 
             # Neighbor in the upper left side
             a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper left side
             if (len(array[a]) == 1):  # There is a neighbor to the upper left side
-                if (array[a, 4] >= numMinEvents):  # There is more or equal numMinEvents
+                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
                     numNeighbors += 1  # Indirect neighbor number 4
 
 
@@ -573,7 +575,7 @@ def isStar(array):
     # and identify the pixel with the highest number of events as the star
     # Parameter array : The array wih the pixels to filter
 
-    outputArray = np.zeros([1, 5], dtype=int)
+    outputArray = np.zeros([1, array.shape[1]], dtype=int)
     for i in range(len(array[:, 0])):
         star = True
         # Neighbor above
@@ -783,7 +785,7 @@ for i in range(len(events)):
 pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
 #Add a column for the number of events per time unit (i.e. events x second)
-pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = int)))  #Add the pixel to the array
+pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = float ) ) )  #Add the pixel to the array
 
 
 
@@ -812,13 +814,9 @@ pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dty
 
 pixelsEvents = addEventsByTime(pixelsEvents, 1000000)
 
-remainPixels = filterArray(pixelsEvents, 2, 4, 1)
-remainPixels = directNeighbors(remainPixels, 1, 3, 8)
-print('ff')
 
-
-
-# capella = np.where( ( pixelsEvents[:,0] == 632 ) & ( pixelsEvents[:,1] == 452 ) )
-# print('Background es :', pixelsEvents[capella])
-# eps = eventsByTime(pixelsEvents[capella, 4], timeData, 500000)
-# print('Background has ', eps, ' events per second')
+remainPixels = directNeighbors(pixelsEvents, 0.6, 2, 8,5)
+remainPixels = filterArray(remainPixels, 15, 4, 1)
+#remainPixels = isStar(remainPixels)
+print('quedan :',len(remainPixels))
+print(remainPixels)
