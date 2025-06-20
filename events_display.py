@@ -16,6 +16,8 @@ import time
 
 #To have interactive plots in Ubuntu: see the coordinates of a pixel wih the cursor of the mouse
 import matplotlib
+from numpy.ma.core import remainder
+
 matplotlib.use('Qt5Agg')
 
 
@@ -713,6 +715,48 @@ def addEventsByTime(array, unitOfTime):
         array[i, 5] = numToAdd
     return array
 
+#Function to fill wih NaN a star pixel and its 8 neighbors pixels
+def starNaN(array, matrix):
+
+    fillMatrix(matrix, array[0], array[1], np.nan) #Star pixel
+    fillMatrix(matrix, ( array[0] + 1 ), array[1], np.nan)  #Right neighbor pixel
+    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] + 1 ), np.nan)  #Right-down neighbor pixel
+    fillMatrix(matrix, array[0], ( array[1] + 1 ), np.nan)  #Down neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] + 1 ), np.nan)  # Left-down neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), array[1], np.nan)  # Left neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] - 1 ), np.nan)  # Left-up neighbor pixel
+    fillMatrix(matrix, array[0], ( array[1] - 1 ), np.nan)  # Up neighbor pixel
+    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), np.nan)  # Right-up neighbor pixel
+
+
+def squareNaN(x1, x2, y1, y2, matrix):
+
+    i = y1
+    j = x1
+    for i in range(y2-y1):
+        for j in range(x2-x1):
+            fillMatrix(matrix, j, i, np.nan)  # Star pixel
+
+
+
+
+def NaNMask(array):
+
+    mask = np.ones((numPixelsY + 1, numPixelsX + 1))
+    for r in range(len(array)):
+        starNaN(array[r], mask)
+
+    squareNaN(73, 93, 456, 480, mask)
+
+    fig1, ax1 = plt.subplots()
+
+    pos1 = ax1.imshow(mask, cmap='cividis_r', interpolation='none')
+    fig1.colorbar(pos1, ax=ax1, shrink=0.8)  # Colorbar
+    ax1.set_title('Pixels After Filtering Process')
+    ax1.set_xlabel('pixels')
+    ax1.set_ylabel('pixels')
+    plt.show()
+
 
 
 #################################################################################################################################################
@@ -740,14 +784,14 @@ with open(file_path, 'r') as csv_file:#Read the file
 
 #CODE TO TEST FILTERING. AS IT IS LONGER THANT THE REFERENCE DATA, IT IS NECESSARY TO HAVE THE SAME TIME INTERVAL
 #filter the file by time
-if ( events[-1,-1] > 1461730 ) :
-    mask = events[:, -1] <= 1461730
-    events = events[mask]
-    events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
-    print('Already filered by time')
-    print('The first event is : ', events[0])
-    print('The last event is : ', events[-1])
-    print('The total time is ' , events[-1,-1]-events[0,-1])
+# if ( events[-1,-1] > 1461730 ) :
+#     mask = events[:, -1] <= 1461730
+#     events = events[mask]
+#     events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
+#     print('Already filered by time')
+#     print('The first event is : ', events[0])
+#     print('The last event is : ', events[-1])
+#     print('The total time is ' , events[-1,-1]-events[0,-1])
 
 
 #Size of the image/matrix
@@ -812,11 +856,27 @@ pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dty
 #TEST FOR THE NUMBER OF EVENTS PER UNIT OF TIME
 ###############################################
 
-pixelsEvents = addEventsByTime(pixelsEvents, 1000000)
+unitOfTime = 1000000 # Parameter
 
-
-remainPixels = directNeighbors(pixelsEvents, 0.6, 2, 8,5)
-remainPixels = filterArray(remainPixels, 15, 4, 1)
-#remainPixels = isStar(remainPixels)
+pixelsEvents = addEventsByTime(pixelsEvents, unitOfTime)
+remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8,5)
+remainPixels = filterArray(remainPixels, 20, 4, 1)
+remainPixels = isStar(remainPixels)
+remainPixels = remainPixels.astype(int)
 print('quedan :',len(remainPixels))
 print(remainPixels)
+
+NaNMask(remainPixels)
+
+
+###############################################
+#TEST FOR THE MASK NaN FOR THE BACKGROUND
+###############################################
+# mask = np.ones((1, 3))
+# mask[0,0] = np.nan
+# print('The mask is : ', mask)
+# numbers = [2, 4, 6]
+# print('The the nulbers are : ', numbers)
+# r = mask * numbers
+# print('The r is : ', r)
+
