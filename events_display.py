@@ -729,33 +729,24 @@ def starNaN(array, matrix):
     fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), np.nan)  # Right-up neighbor pixel
 
 
-def squareNaN(x1, x2, y1, y2, matrix):
+def rectangleNaN(x1, x2, y1, y2, matrix):
 
-    i = y1
-    j = x1
-    for i in range(y2-y1):
-        for j in range(x2-x1):
-            fillMatrix(matrix, j, i, np.nan)  # Star pixel
 
+    for j in range(y2-y1):
+        for i in range(x2-x1):
+            fillMatrix(matrix, i+x1, j+y1, np.nan)
 
 
 
-def NaNMask(array):
 
-    mask = np.ones((numPixelsY + 1, numPixelsX + 1))
+def NaNMask(array, matrix):
+
     for r in range(len(array)):
-        starNaN(array[r], mask)
+        starNaN(array[r], matrix)
 
-    squareNaN(73, 93, 456, 480, mask)
+    rectangleNaN(73, 93, 456, 480, matrix) # NaN square for the meteor
+    return matrix
 
-    fig1, ax1 = plt.subplots()
-
-    pos1 = ax1.imshow(mask, cmap='cividis_r', interpolation='none')
-    fig1.colorbar(pos1, ax=ax1, shrink=0.8)  # Colorbar
-    ax1.set_title('Pixels After Filtering Process')
-    ax1.set_xlabel('pixels')
-    ax1.set_ylabel('pixels')
-    plt.show()
 
 
 
@@ -866,7 +857,24 @@ remainPixels = remainPixels.astype(int)
 print('quedan :',len(remainPixels))
 print(remainPixels)
 
-NaNMask(remainPixels)
+
+mask = np.ones((numPixelsY + 1, numPixelsX + 1))
+mask = NaNMask(remainPixels, mask)
+# SumMatrix = PositiveEventsMatrix + NegativeEventsMatrix
+# NaNMask = NaNMask * SumMatrix
+fig1, ax1 = plt.subplots()
+
+pos1 = ax1.imshow(mask, cmap='cividis_r', interpolation='none')
+fig1.colorbar(pos1, ax=ax1, shrink=0.8)  # Colorbar
+ax1.set_title('Pixels After Filtering Process')
+ax1.set_xlabel('pixels')
+ax1.set_ylabel('pixels')
+displayExtraInfo(ax1)
+plt.show()
+
+
+
+# display4Matrix()
 
 
 ###############################################
