@@ -9,8 +9,15 @@ from events_display import *
 
 #Import the data file
 # ___________ FOR METEOR 00:29:40 _______________________
-#file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
 file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
+#file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
+#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/stars_0037.csv' # Modify according to the file path
+#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_235935.csv' # Modify according to the file path
+#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_232112_big.csv' # Modify according to the file path
+#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_233126.csv' # Modify according to the file path
+
+
+
 
 
 #Message text
@@ -77,16 +84,13 @@ pixelsEvents = np.delete(pixelsEvents, 0, 0)
 pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = float ) ) )  #Add the pixel to the array
 
 
-# # #Test to filter just the stars and find out if the method works.
-# remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
-# remainPixels = filterArray(remainPixels, 5, 3, 1)
-# mean = np.ceil(np.mean(remainPixels[:, -1]))
-# print('The average number of events in the array is : ', mean)
-# remainPixels = filterArray(remainPixels, mean, 3, 1)
-# remainPixels = isStar(remainPixels)
-# print('There are ', len(remainPixels), 'possible stars')
-# print('The possible stars are: \n', remainPixels)
-# displayPixels(remainPixels)
+
+
+#p = np.where( ( pixelsEvents[:,0] == 236 ) & ( pixelsEvents[:,1] == 289) )
+#pixel1 = pixelsEvents[p]
+#print(pixel1)
+
+
 
 
 
@@ -99,66 +103,84 @@ pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dty
 #TEST FOR THE NUMBER OF EVENTS PER UNIT OF TIME
 ###############################################
 
-
+#Filtering to just have the 6 stars
 unitOfTime = 1000000 # Parameter
-
 pixelsEvents = addEventsByTime(pixelsEvents, timeData, unitOfTime)
-remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8,5)
-remainPixels = filterArray(remainPixels, 20, 4, 1)
-remainPixels = isStar(remainPixels)
+remainPixels = directNeighbors(pixelsEvents, 0.13, 4, 8,5)
+remainPixels = filterArray(remainPixels, 2, 4, 1)
+
+remainPixels = filterArray(remainPixels, 7, 4, 2)
+#remainPixels = isStar(remainPixels) #The 4 stars
 remainPixels = remainPixels.astype(int)
-print('quedan :',len(remainPixels))
+print('There are ',len(remainPixels), 'pixels.')
 print(remainPixels)
 
+finalMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
-suma = PositiveEventsMatrix + NegativeEventsMatrix
-
-
-mask = np.ones((numPixelsY + 1, numPixelsX + 1))
-mask = NaNMask(remainPixels, mask)
-
-mask = mask * suma
-
-justNaN = np.isnan(mask)
-justNaN = np.logical_not(justNaN)
-
-background = mask[justNaN]
-
-fig1, ax1 = plt.subplots()
-fig2, ax2 = plt.subplots()
-
-pos1 = ax1.imshow(suma, cmap='cividis_r', interpolation='none', vmax = 35)
-fig1.colorbar(pos1, ax=ax1, shrink=0.8)  # Colorbar
-ax1.set_title('Sum Events Matrix')
-ax1.set_xlabel('pixels')
-ax1.set_ylabel('pixels')
-displayExtraInfo(ax1, file_path)
-
-pos2 = ax2.imshow(mask, cmap='cividis_r', interpolation='none', vmax = 35)
-fig2.colorbar(pos2, ax=ax2, shrink=0.8)  # Colorbar
-ax2.set_title('Mask Matrix')
-ax2.set_xlabel('pixels')
-ax2.set_ylabel('pixels')
-displayExtraInfo(ax2, file_path)
-
-plt.show()
+displayPixels(remainPixels, finalMatrix, file_path)
 
 
+#display4Matrix(PositiveEventsMatrix, NegativeEventsMatrix, file_path)
 
-###############################################
-#TEST FOR THE MASK NaN FOR THE BACKGROUND
-###############################################
-# mask = np.ones((1, 3))
-# mask[0,0] = np.nan
-# print('The mask is : ', mask)
-# numbers = [2, 4, 6]
-# print('The the nulbers are : ', numbers)
-# r = mask * numbers
-# print('The r is : ', r)
+
+# #Find the 1st star
+# p = np.where( ( pixelsEvents[:,0] == 384 ) & ( pixelsEvents[:,1] == 426) )
+# #Array with just the stars
+# justStars = pixelsEvents[p]
+# #Find the 2nd star
+# p = np.where( ( pixelsEvents[:,0] == 534 ) & ( pixelsEvents[:,1] == 306) )
+# #Add the 2nd star
+# justStars = np.vstack((justStars, pixelsEvents[p]))
+# #Find the 3rd star
+# p = np.where( ( pixelsEvents[:,0] == 412 ) & ( pixelsEvents[:,1] == 216) )
+# #Add the 3rd star
+# justStars = np.vstack((justStars, pixelsEvents[p]))
+# #Find the 4th star
+# p = np.where( ( pixelsEvents[:,0] == 236 ) & ( pixelsEvents[:,1] == 289) )
+# #Add the 4th star
+# justStars = np.vstack((justStars, pixelsEvents[p]))
 #
-# rnan = np.isnan(r)
-# rnan = np.logical_not(rnan)
-# print('The r is : ', rnan)
+# justStars = justStars.astype(int)
+# print(justStars)
 #
-# rfinal = r[rnan]
-# print('The r is : ', rfinal)
+# suma = PositiveEventsMatrix + NegativeEventsMatrix #The total number of events in all the data
+#
+# maskMatrix = np.empty((numPixelsY + 1, numPixelsX + 1))
+# maskMatrix.fill(np.nan) #Create a matrix with NaN terms
+# maskMatrix = onesMask(justStars, maskMatrix) #Create the matrix with ones in the neighbors pixels and NaN terms
+#
+# neighborsMatrix = suma * maskMatrix #Keep just te neighbors without background, stars and meteor
+#
+# justNaN = np.isnan(neighborsMatrix)
+# justNaN = np.logical_not(justNaN) #Mask to remove NaN elements
+#
+# onlyNeighbors = neighborsMatrix[justNaN] #Keep just the neighbors without NaN elements
+#
+# getParameters(onlyNeighbors)
+#
+# fig1, ax1 = plt.subplots()
+# fig2, ax2 = plt.subplots()
+# fig3, ax3 = plt.subplots()
+#
+# pos1 = ax1.imshow(maskMatrix, cmap = 'cividis_r', interpolation = 'none')
+# fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
+# ax1.set_title("Neighbors Pixels' Mask Matrix")
+# ax1.set_xlabel('pixels')
+# ax1.set_ylabel('pixels')
+# displayExtraInfo(ax1, file_path)
+#
+# pos2 = ax2.imshow(suma, cmap = 'cividis_r', interpolation = 'none', vmax = 25)
+# fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
+# ax2.set_title('Total Events Matrix')
+# ax2.set_xlabel('pixels')
+# ax2.set_ylabel('pixels')
+# displayExtraInfo(ax2, file_path)
+#
+# pos3 = ax3.imshow(neighborsMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = 25)
+# fig3.colorbar(pos3, ax=ax3, shrink = 0.8)
+# ax3.set_title("Neighbors Pixels' Matrix")
+# ax3.set_xlabel('pixels')
+# ax3.set_ylabel('pixels')
+# displayExtraInfo(ax3, file_path)
+#
+# plt.show()

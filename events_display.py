@@ -125,29 +125,29 @@ def displayBihistogram():
 
 #Function to display the 4 matrix of the image.
 #Positive Events Matrix, Negative Events Matrix, Sum Events Matrix, Average Events Matrix
-def display4Matrix():
+def display4Matrix(positiveMatrix, negativeMatrix, filePath):
     print('Function display4Matrix')
 
     #Average Matrix
-    AverageMatrix = PositiveEventsMatrix - NegativeEventsMatrix
+    AverageMatrix = positiveMatrix - negativeMatrix
 
     #Sum Matrix
-    SumMatrix = PositiveEventsMatrix + NegativeEventsMatrix
+    SumMatrix = positiveMatrix + negativeMatrix
 
 
     #Display images
     #Display Positive Events Matrix
     #Variable: Max value of the matrix
-    MaxPosMatrix = np.max(PositiveEventsMatrix)
-    print('The maximun number of events in the positive matrix is: ', np.max(PositiveEventsMatrix))
-    print('The minimun number of events in the positive matrix is: ', np.min(PositiveEventsMatrix, where = PositiveEventsMatrix > 0, initial = np.inf))
+    MaxPosMatrix = np.max(positiveMatrix)
+    print('The maximun number of events in the positive matrix is: ', np.max(positiveMatrix))
+    print('The minimun number of events in the positive matrix is: ', np.min(positiveMatrix, where = positiveMatrix > 0, initial = np.inf))
 
 
     #Display Negative Events Matrix
     #Variable: Max value of the matrix
-    MaxNegMatrix = np.max(NegativeEventsMatrix)
-    print('The maximun number of events in the negative matrix is: ', np.max(NegativeEventsMatrix))
-    print('The minimun number of events in the negative matrix is: ', np.min(NegativeEventsMatrix, where = NegativeEventsMatrix > 0, initial = np.inf))
+    MaxNegMatrix = np.max(negativeMatrix)
+    print('The maximun number of events in the negative matrix is: ', np.max(negativeMatrix))
+    print('The minimun number of events in the negative matrix is: ', np.min(negativeMatrix, where = negativeMatrix > 0, initial = np.inf))
 
 
     #Display Sum Matrix
@@ -171,7 +171,7 @@ def display4Matrix():
     #print('The minimun number of events in the average matrix after transformation is: ', np.min(AverageMatrix))
 
     
-    vMaxScale = 35
+    vMaxScale = 25
 
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
@@ -179,24 +179,24 @@ def display4Matrix():
     fig4, ax4 = plt.subplots()
 
 
-    pos1 = ax1.imshow(PositiveEventsMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    pos1 = ax1.imshow(positiveMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
     ax1.set_title('Positve Events Matrix')
     ax1.set_xlabel('pixels')
     ax1.set_ylabel('pixels')
-    xyMax = np.where(PositiveEventsMatrix >= MaxPosMatrix)
+    xyMax = np.where(positiveMatrix >= MaxPosMatrix)
     ax1.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax1)
+    displayExtraInfo(ax1, filePath)
 
 
-    pos2 = ax2.imshow(NegativeEventsMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    pos2 = ax2.imshow(negativeMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
     ax2.set_title('Negative Events Matrix')
     ax2.set_xlabel('pixels')
     ax2.set_ylabel('pixels')
-    xyMax = np.where(NegativeEventsMatrix >= MaxNegMatrix)
+    xyMax = np.where(negativeMatrix >= MaxNegMatrix)
     ax2.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax2)
+    displayExtraInfo(ax2, filePath)
 
     pos3 = ax3.imshow(SumMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig3.colorbar(pos3, ax=ax3, shrink = 0.8)
@@ -205,7 +205,7 @@ def display4Matrix():
     ax3.set_ylabel('pixels')
     xyMax = np.where(SumMatrix >= MaxSumMatrix)
     ax3.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax3)
+    displayExtraInfo(ax3, filePath)
 
 
     pos4 = ax4.imshow(AverageMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
@@ -217,7 +217,7 @@ def display4Matrix():
     ax4.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
     xyMin = np.where(AverageMatrix <= MinAvgMatrix)
     ax4.annotate('Min: ('+ str(xyMin[1])+',' + str(xyMin[0])+')', xy=(xyMin[1], xyMin[0]), xytext=(xyMin[1]-75, xyMin[0]-75), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax4)
+    displayExtraInfo(ax4, filePath)
 
     plt.show()
     
@@ -292,50 +292,53 @@ def makePixelsHistogram(xCoord, yCoord, polarity, array):
 
     
 #Function to display desired pixels
-def displayPixels(array):
+def displayPixels(array, matrix, filePath):
 
-    m = np.zeros((numPixelsY + 1, numPixelsX + 1))
+    #m = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
 
     for i in range( len( array[:,0] ) ):
-        fillMatrix(m, array[i, 0], array[i, 1], array[i, 4])
+        fillMatrix(matrix, array[i, 0], array[i, 1], array[i, 4])
 
-    Capella = False
-    Jupiter = False
-    Betelgeuse = False
-    Procyon = False
-    Mars = False
-    Pollux = False
-    s = np.where( (array[:, 0] == 285) & (array[:, 1] == 60) )
-    if( len(array[s]) == 1 ):
-        Capella = True
+    maxValueArray = np.max(array[:, 4])
 
 
-    s = np.where( (array[:, 0] == 530) & (array[:, 1] == 91) )
-    if( len(array[s]) == 1 ):
-        Jupiter = True
-
-
-    s = np.where( (array[:, 0] == 508) & (array[:, 1] == 266) )
-    if( len(array[s]) == 1 ):
-        Betelgeuse = True
-
-    s = np.where( (array[:, 0] == 392) & (array[:, 1] == 439) )
-    if( len(array[s]) == 1 ):
-        Procyon = True
-
-    s = np.where( (array[:, 0] == 221) & (array[:, 1] == 412) )
-    if( len(array[s]) == 1 ):
-        Mars = True
-
-    s = np.where((array[:, 0] == 259) & (array[:, 1] == 314))
-    if (len(array[s]) == 1):
-        Pollux = True
+    # Capella = False
+    # Jupiter = False
+    # Betelgeuse = False
+    # Procyon = False
+    # Mars = False
+    # Pollux = False
+    # s = np.where( (array[:, 0] == 285) & (array[:, 1] == 60) )
+    # if( len(array[s]) == 1 ):
+    #     Capella = True
+    #
+    #
+    # s = np.where( (array[:, 0] == 530) & (array[:, 1] == 91) )
+    # if( len(array[s]) == 1 ):
+    #     Jupiter = True
+    #
+    #
+    # s = np.where( (array[:, 0] == 508) & (array[:, 1] == 266) )
+    # if( len(array[s]) == 1 ):
+    #     Betelgeuse = True
+    #
+    # s = np.where( (array[:, 0] == 392) & (array[:, 1] == 439) )
+    # if( len(array[s]) == 1 ):
+    #     Procyon = True
+    #
+    # s = np.where( (array[:, 0] == 221) & (array[:, 1] == 412) )
+    # if( len(array[s]) == 1 ):
+    #     Mars = True
+    #
+    # s = np.where((array[:, 0] == 259) & (array[:, 1] == 314))
+    # if (len(array[s]) == 1):
+    #     Pollux = True
 
 
     fig1, ax1 = plt.subplots()
    
-    pos1 = ax1.imshow(m, cmap = 'cividis_r', interpolation = 'none')
+    pos1 = ax1.imshow(matrix, cmap = 'cividis_r', interpolation = 'none', vmax = maxValueArray)
     fig1.colorbar(pos1, ax = ax1, shrink = 0.8)#Colorbar
     ax1.set_title('Pixels After Filtering Process')
     ax1.set_xlabel('pixels')
@@ -344,27 +347,27 @@ def displayPixels(array):
     annotatePixels(array, ax1)
     
 
-    if( Capella ):
-        ax1.annotate('Capella', xy=(285, 60), xytext=(285+50, 60+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    # if( Capella ):
+    #     ax1.annotate('Capella', xy=(285, 60), xytext=(285+50, 60+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if ( Jupiter ):
+    #     ax1.annotate('Jupiter', xy=(530, 91), xytext=(530+50, 91+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if( Betelgeuse ):
+    #     ax1.annotate('Betelgeuse', xy=(508, 266), xytext=(508+50, 266+50), arrowprops=dict(facecolor='black', shrink=0.0005))
+    #
+    #
+    # if( Procyon ):
+    #     ax1.annotate('Procyon', xy=(392, 439), xytext=(392+50, 439+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if( Mars ):
+    #     ax1.annotate('Mars', xy=(221, 412), xytext=(221+50, 412+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if (Pollux):
+    #     ax1.annotate('Pollux', xy=(259, 314), xytext=(259 + 50, 314 + 50),
+    #                  arrowprops=dict(facecolor='black', shrink=0.005))
 
-    if ( Jupiter ):
-        ax1.annotate('Jupiter', xy=(530, 91), xytext=(530+50, 91+50), arrowprops=dict(facecolor='black', shrink=0.005))
-
-    if( Betelgeuse ):
-        ax1.annotate('Betelgeuse', xy=(508, 266), xytext=(508+50, 266+50), arrowprops=dict(facecolor='black', shrink=0.0005))
-
-
-    if( Procyon ):
-        ax1.annotate('Procyon', xy=(392, 439), xytext=(392+50, 439+50), arrowprops=dict(facecolor='black', shrink=0.005))
-
-    if( Mars ):
-        ax1.annotate('Mars', xy=(221, 412), xytext=(221+50, 412+50), arrowprops=dict(facecolor='black', shrink=0.005))
-
-    if (Pollux):
-        ax1.annotate('Pollux', xy=(259, 314), xytext=(259 + 50, 314 + 50),
-                     arrowprops=dict(facecolor='black', shrink=0.005))
-
-    displayExtraInfo(ax1)
+    displayExtraInfo(ax1, filePath)
 
 
     #saveImage()
@@ -648,7 +651,7 @@ def annotatePixels(array, ax):
     #The function annotates all the pixels inside the array
 
     for i in range( len( array[:,0] ) ) :
-        ax.annotate(str(i), xy=(array[i,0], array[i,1]), xytext=(array[i,0]+15, array[i,1]+15), arrowprops=dict(facecolor='black', shrink=0.005))
+        ax.annotate(str(i), xy=(array[i,0]+3, array[i,1]), xytext=(array[i,0]+12, array[i,1]), arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=6))
 
 
 
@@ -716,8 +719,10 @@ def addEventsByTime(array, totalTimeData, unitOfTime):
         array[i, 5] = numToAdd
     return array
 
-#Function to fill wih NaN a star pixel and its 8 neighbors pixels
+#Function to fill with NaN a star pixel and its 8 neighbors pixels.
 def starNaN(array, matrix):
+# Parameter array : The star to fill with NaN, in form of an array with the coordinates in the form = [x,y,...].
+# Parameter matrix : The matrix to form the mask in.
 
     fillMatrix(matrix, array[0], array[1], np.nan) #Star pixel
     fillMatrix(matrix, ( array[0] + 1 ), array[1], np.nan)  #Right neighbor pixel
@@ -729,21 +734,78 @@ def starNaN(array, matrix):
     fillMatrix(matrix, array[0], ( array[1] - 1 ), np.nan)  # Up neighbor pixel
     fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), np.nan)  # Right-up neighbor pixel
 
-
+#Function to fill a rectangle (the meteor space) with NaN terms.
 def rectangleNaN(x1, x2, y1, y2, matrix):
-
+# Parameter x1 : The x coordinate where the rectangle starts.
+# Parameter x2 : The x coordinate where the rectangle ends.
+# Parameter y1 : The y coordinate where the rectangle starts.
+# Parameter y2 : The y coordinate where the rectangle ends.
+# Parameter matrix : The matrix to form the mask in.
 
     for j in range(y2-y1):
         for i in range(x2-x1):
             fillMatrix(matrix, i+x1, j+y1, np.nan)
 
+#Function to fill with ones (1) terms the 8 neighbors pixels of a star. The star pixel will not be filled.
+def neighborsOnes(array, matrix):
+# Parameter array : The star to fill the neighbors with ones (1) terms, in form of an array with the coordinates in the form = [x,y,...].
+# Parameter matrix : The matrix to form the mask in.
 
+    fillMatrix(matrix, ( array[0] + 1 ), array[1], 1)  #Right neighbor pixel
+    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] + 1 ), 1)  #Right-down neighbor pixel
+    fillMatrix(matrix, array[0], ( array[1] + 1 ), 1)  #Down neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] + 1 ), 1)  # Left-down neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), array[1], 1)  # Left neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] - 1 ), 1)  # Left-up neighbor pixel
+    fillMatrix(matrix, array[0], ( array[1] - 1 ), 1)  # Up neighbor pixel
+    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), 1)  # Right-up neighbor pixel
 
-
+#Function to create a matrix with NaN terms calling the others functions.
 def NaNMask(array, matrix):
 
     for r in range(len(array)):
         starNaN(array[r], matrix)
 
-    rectangleNaN(73, 93, 456, 480, matrix) # NaN square for the meteor
+    #rectangleNaN(73, 93, 456, 480, matrix) # NaN square for the meteor
+    rectangleNaN(223, 231, 306, 327, matrix) # NaN square for the meteor
+
     return matrix
+
+#Function to create a matrix with ones terms calling the others functions.
+def onesMask(array, matrix):
+
+    for r in range(len(array)):
+        neighborsOnes(array[r], matrix)
+
+    return matrix
+
+#Function to calculate the average, the median, the minimum and the maximum of an array of pixels.
+def getParameters(array):
+# Parameter array : The array with the pixels to calculate the parameters for.
+
+    lengthData = len(array)
+
+    maskZero = array == 0
+    arrayZero = array[maskZero]
+
+    maskNoZero = array != 0
+    arrayNoZero = array[maskNoZero]
+
+    arraySum = np.sum(array, dtype=int)
+
+    totalMean = np.mean(array)
+
+    totalMedian = np.median(array)
+
+    totalMin = np.min(array)
+
+    totalMax = np.max(array)
+
+    print("The length of the pixels' array is: ", lengthData)
+    print('The total number of pixels with zero events is : ', len(arrayZero))
+    print('The total number of pixels with NON-ZERO events is : ', len(arrayNoZero))
+    print("The total sum of pixels' events is : ", arraySum)
+    print("The mean of pixels' events is : ", totalMean)
+    print("The median of pixels' events is : ", totalMedian)
+    print("The number minimum of events in the array is : ", totalMin)
+    print("The number maximum of events in the array is : ", totalMax)
