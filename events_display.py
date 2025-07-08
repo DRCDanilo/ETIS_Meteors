@@ -881,3 +881,19 @@ def starCoordinatesList(array):
 
     outputArray = np.delete(outputArray, 0, 0) #Delete the first row because it is [0,0].
     return outputArray
+
+def meteorCoordinatesList(x1, x2, y1, y2):
+#Function to make a list with the coordinates of the rectangle where the meteor's trajectory is.
+#Parameter x1 : The x coordinate where the rectangle starts.
+#Parameter x2 : The x coordinate where the rectangle ends.
+#Parameter y1 : The y coordinate where the rectangle starts.
+#Parameter y2 : The y coordinate where the rectangle ends.
+
+    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
+
+    for j in range((y2-y1)+1):
+        for i in range((x2-x1)+1):
+            outputArray = np.vstack((outputArray, np.array([i+x1, j+y1]))) #Add the coordinate to the output array.
+
+    outputArray = np.delete(outputArray, 0, 0)  # Delete the first row because it is [0,0].
+    return outputArray

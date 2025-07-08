@@ -159,7 +159,8 @@ print(remainPixels)
 # plt.show()
 
 
-test = starCoordinatesList(remainPixels)
+#test = starCoordinatesList(remainPixels)
+test = meteorCoordinatesList(3,4,3,4)
 print("The coordinates array length is :", len(test))
 print(test)
 
