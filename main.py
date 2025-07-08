@@ -104,20 +104,68 @@ pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dty
 ###############################################
 
 #Filtering to just have the 6 stars
-unitOfTime = 1000000 # Parameter
-pixelsEvents = addEventsByTime(pixelsEvents, timeData, unitOfTime)
-remainPixels = directNeighbors(pixelsEvents, 0.13, 4, 8,5)
-remainPixels = filterArray(remainPixels, 2, 4, 1)
-
-remainPixels = filterArray(remainPixels, 7, 4, 2)
-#remainPixels = isStar(remainPixels) #The 4 stars
+unitOfTime = 1000000 # Parameter to define the unit of time of the events
+pixelsEvents = addEventsByTime(pixelsEvents, timeData, unitOfTime) #Add the number of events per unit of time to every pixel
+remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8, 5) #Filtering by direct neighbors
+remainPixels = filterArray(remainPixels, 20, 4, 1) #Filtering by number of events per unit of time
+remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to the same star
 remainPixels = remainPixels.astype(int)
 print('There are ',len(remainPixels), 'pixels.')
 print(remainPixels)
 
-finalMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
+#finalMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
-displayPixels(remainPixels, finalMatrix, file_path)
+#displayPixels(remainPixels, finalMatrix, file_path)
+
+
+suma = PositiveEventsMatrix + NegativeEventsMatrix #The total number of events in all the data
+#Matrix to make the mask
+mask = np.ones((numPixelsY + 1, numPixelsX + 1))
+mask = NaNMask(remainPixels, mask) #Mask : NaN terms in stars and meteor, 1 the rest of the pixels
+mask = suma * mask #Keep just te background without stars and meteor
+justNaN = np.isnan(mask)
+justNaN = np.logical_not(justNaN) #Mask to remove NaN elements
+background = mask[justNaN] #Keep just the background without NaN elements
+getParameters(background) #Get the parameters of the background
+
+print('The real background information is :') #Analysis of the real background
+maskRealBackground = background != 0
+realBackground  = background[maskRealBackground] #Get the real background
+getParameters(realBackground) #Get the parameters of the real background
+
+
+fig1, ax1 = plt.subplots()
+fig2, ax2 = plt.subplots()
+
+pos1 = ax1.imshow(suma, cmap = 'cividis_r', interpolation = 'none')
+fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
+ax1.set_title("Total Events Matrix")
+ax1.set_xlabel('pixels')
+ax1.set_ylabel('pixels')
+displayExtraInfo(ax1, file_path)
+
+pos2 = ax2.imshow(mask, cmap = 'cividis_r', interpolation = 'none', vmax = 25)
+fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
+ax2.set_title('Mask Matrix')
+ax2.set_xlabel('pixels')
+ax2.set_ylabel('pixels')
+displayExtraInfo(ax2, file_path)
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #display4Matrix(PositiveEventsMatrix, NegativeEventsMatrix, file_path)
@@ -162,7 +210,7 @@ displayPixels(remainPixels, finalMatrix, file_path)
 # fig2, ax2 = plt.subplots()
 # fig3, ax3 = plt.subplots()
 #
-# pos1 = ax1.imshow(maskMatrix, cmap = 'cividis_r', interpolation = 'none')
+# pos1 = ax1.imshow(mask, cmap = 'cividis_r', interpolation = 'none')
 # fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
 # ax1.set_title("Neighbors Pixels' Mask Matrix")
 # ax1.set_xlabel('pixels')
@@ -176,7 +224,7 @@ displayPixels(remainPixels, finalMatrix, file_path)
 # ax2.set_ylabel('pixels')
 # displayExtraInfo(ax2, file_path)
 #
-# pos3 = ax3.imshow(neighborsMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = 25)
+# pos3 = ax3.imshow(suma, cmap = 'cividis_r', interpolation = 'none', vmax = 25)
 # fig3.colorbar(pos3, ax=ax3, shrink = 0.8)
 # ax3.set_title("Neighbors Pixels' Matrix")
 # ax3.set_xlabel('pixels')
