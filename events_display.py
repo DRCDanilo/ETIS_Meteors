@@ -57,8 +57,9 @@ def saveImage (file_path):
     
     plt.savefig(full_path,bbox_inches='tight', pad_inches=0)
 
-#Function to display additional information in the image
+
 def displayExtraInfo (axe, filePath):
+#Function to display additional information in the image
     dataName = filePath[56:]
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     fileImgName = dataName + '_' + actualDataTime
@@ -137,9 +138,10 @@ def displayBihistogram(array, binWidth, filePath):
     ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
 
+
+def display4Matrix(positiveMatrix, negativeMatrix, filePath):
 #Function to display the 4 matrix of the image.
 #Positive Events Matrix, Negative Events Matrix, Sum Events Matrix, Average Events Matrix
-def display4Matrix(positiveMatrix, negativeMatrix, filePath):
     print('Function display4Matrix')
 
     #Average Matrix
@@ -522,8 +524,9 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     #plt.show()
 
 
-#Function to filter pixels by direct neighbors with a x number of events.
+
 def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors, numColumn):
+#Function to filter pixels by direct neighbors with a x number of events.
 #The function search in every pixel in the input array, looking for at least one direct neighbor (up, down, left or right)
 #with at least the numMinEVents in any neighbor
 #Parameter array : The array wih the pixels to filter
@@ -599,11 +602,12 @@ def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors, numColumn):
     return outputArray
 
 
-# Function to identify if two or more pixels who are direct neighbors, belong to a single star.
+
 def isStar(array):
-    # The function search in every pixel in the input array, looking for directs neighbors (up, down, left or right)
-    # and identify the pixel with the highest number of events as the star
-    # Parameter array : The array wih the pixels to filter
+#Function to identify if two or more pixels who are direct neighbors, belong to a single star.
+#The function search in every pixel in the input array, looking for directs neighbors (up, down, left or right)
+#and identify the pixel with the highest number of events as the star
+#Parameter array : The array wih the pixels to filter
 
     outputArray = np.zeros([1, array.shape[1]], dtype=int)
     for i in range(len(array[:, 0])):
@@ -671,28 +675,31 @@ def isStar(array):
     return outputArray
 
 
-#Function to annotate - make more visible some pixels
+
 def annotatePixels(array, ax):
-    #The function annotates all the pixels inside the array
+#Function to annotate - make more visible some pixels
+#The function annotates all the pixels inside the array
 
     for i in range( len( array[:,0] ) ) :
         ax.annotate(str(i), xy=(array[i,0]+3, array[i,1]), xytext=(array[i,0]+12, array[i,1]), arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=6))
 
 
 
-# Function to analyze along the time an array and determine if here is continuity of events.
+
 def continuity(array, e):
-# The function look for continuity in the array, that means look for a number of events in the array. The number of events is determined by the parameter e.
-# Parameter array : The array to analyze
-# Parameter e : The minimum number of events in the array to have continuity
+#Function to analyze along the time an array and determine if here is continuity of events.
+#The function look for continuity in the array, that means look for a number of events in the array. The number of events is determined by the parameter e.
+#Parameter array : The array to analyze
+#Parameter e : The minimum number of events in the array to have continuity
 
     if( len(array) >= e ):
         return True
     return None
 
 
-# Function to identify a star looking for the continuity of the events in a time interval.
+
 def continuousStar(array, interval, timeStop, level):
+#Function to identify a star looking for the continuity of the events in a time interval.
 #Parameter array : The array where the possible stars are.
 #Parameter interval : The time interval to evaluate the continuity of the events.
 #Parameter timeStop : The time limit to look for the continuity of the events.
@@ -723,31 +730,33 @@ def continuousStar(array, interval, timeStop, level):
     return outputArray
 
 
-# Function to calculate the number of events per second or per a determined amount of time, of one pixel.
+
 def eventsByTime(numTotalEvents, totalTimeData, unitOfTime):
-# Parameter numTotalEvents : The total number of events of the pixel.
-# Parameter totalTimeData : The total duration time of the data.
-# Parameter unitOfTime : The time unit for the reference in microseconds.
+#Function to calculate the number of events per second or per a determined amount of time, of one pixel.
+#Parameter numTotalEvents : The total number of events of the pixel.
+#Parameter totalTimeData : The total duration time of the data.
+#Parameter unitOfTime : The time unit for the reference in microseconds.
 
     eventsPerTime = ( unitOfTime * numTotalEvents ) / ( totalTimeData )
     return eventsPerTime
 
 
-# Function to add the number of events per second or per a determined amount of time, to an array of pixels.
 def addEventsByTime(array, totalTimeData, unitOfTime):
-# Parameter array : The array with pixels to add their number of events per amount of time.
-# Parameter totalTimeData : The total duration time of the data.
-# Parameter unitOfTime : The time unit for the reference.
+#Function to add the number of events per second or per a determined amount of time, to an array of pixels.
+#Parameter array : The array with pixels to add their number of events per amount of time.
+#Parameter totalTimeData : The total duration time of the data.
+#Parameter unitOfTime : The time unit for the reference.
 
     for i in range( len( array ) ):
         numToAdd = eventsByTime( array[i, 4], totalTimeData, unitOfTime)
         array[i, 5] = numToAdd
     return array
 
-#Function to fill with NaN a star pixel and its 8 neighbors pixels.
+
 def starNaN(array, matrix):
-# Parameter array : The star to fill with NaN, in form of an array with the coordinates in the form = [x,y,...].
-# Parameter matrix : The matrix to form the mask in.
+#Function to fill with NaN a star pixel and its 8 neighbors pixels.
+#Parameter array : The star to fill with NaN, in form of an array with the coordinates in the form = [x,y,...].
+#Parameter matrix : The matrix to form the mask in.
 
     fillMatrix(matrix, array[0], array[1], np.nan) #Star pixel
     fillMatrix(matrix, ( array[0] + 1 ), array[1], np.nan)  #Right neighbor pixel
@@ -759,22 +768,24 @@ def starNaN(array, matrix):
     fillMatrix(matrix, array[0], ( array[1] - 1 ), np.nan)  # Up neighbor pixel
     fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), np.nan)  # Right-up neighbor pixel
 
-#Function to fill a rectangle (the meteor space) with NaN terms.
+
 def rectangleNaN(x1, x2, y1, y2, matrix):
-# Parameter x1 : The x coordinate where the rectangle starts.
-# Parameter x2 : The x coordinate where the rectangle ends.
-# Parameter y1 : The y coordinate where the rectangle starts.
-# Parameter y2 : The y coordinate where the rectangle ends.
-# Parameter matrix : The matrix to form the mask in.
+#Function to fill a rectangle (the meteor space) with NaN terms.
+#Parameter x1 : The x coordinate where the rectangle starts.
+#Parameter x2 : The x coordinate where the rectangle ends.
+#Parameter y1 : The y coordinate where the rectangle starts.
+#Parameter y2 : The y coordinate where the rectangle ends.
+#Parameter matrix : The matrix to form the mask in.
 
     for j in range(y2-y1):
         for i in range(x2-x1):
             fillMatrix(matrix, i+x1, j+y1, np.nan)
 
-#Function to fill with ones (1) terms the 8 neighbors pixels of a star. The star pixel will not be filled.
+
 def neighborsOnes(array, matrix):
-# Parameter array : The star to fill the neighbors with ones (1) terms, in form of an array with the coordinates in the form = [x,y,...].
-# Parameter matrix : The matrix to form the mask in.
+#Function to fill with ones (1) terms the 8 neighbors pixels of a star. The star pixel will not be filled.
+#Parameter array : The star to fill the neighbors with ones (1) terms, in form of an array with the coordinates in the form = [x,y,...].
+#Parameter matrix : The matrix to form the mask in.
 
     fillMatrix(matrix, ( array[0] + 1 ), array[1], 1)  #Right neighbor pixel
     fillMatrix(matrix, ( array[0] + 1 ), ( array[1] + 1 ), 1)  #Right-down neighbor pixel
@@ -785,8 +796,9 @@ def neighborsOnes(array, matrix):
     fillMatrix(matrix, array[0], ( array[1] - 1 ), 1)  # Up neighbor pixel
     fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), 1)  # Right-up neighbor pixel
 
-#Function to create a matrix with NaN terms calling the others functions.
+
 def NaNMask(array, matrix):
+#Function to create a matrix with NaN terms calling the others functions.
 
     for r in range(len(array)):
         starNaN(array[r], matrix)
@@ -796,17 +808,18 @@ def NaNMask(array, matrix):
 
     return matrix
 
-#Function to create a matrix with ones terms calling the others functions.
 def onesMask(array, matrix):
+#Function to create a matrix with ones terms calling the others functions.
 
     for r in range(len(array)):
         neighborsOnes(array[r], matrix)
 
     return matrix
 
-#Function to calculate the average, the median, the minimum and the maximum of an array of pixels.
+
 def getParameters(array):
-# Parameter array : The array with the pixels to calculate the parameters for.
+#Function to calculate the average, the median, the minimum and the maximum of an array of pixels.
+#Parameter array : The array with the pixels to calculate the parameters for.
 
     lengthData = len(array)
 
@@ -836,9 +849,9 @@ def getParameters(array):
     print("The number maximum of events in the array is : ", totalMax)
 
 
-#Function to identify a meteor trajectory form an array.
 # def isMeteor(array):
-# Parameter array : The array with the pixels to identify the trajectory of.
+#Function to identify a meteor trajectory form an array.
+#Parameter array : The array with the pixels to identify the trajectory of.
 
 
 # Function to identify a pixel alone without neighbors pixels and delete it form an array.
@@ -848,3 +861,23 @@ def noPixelAlone(array):
     outputArray = np.zeros([1, array.shape[1]], dtype=int)
     # for i in range( len( array[:, 0] ) ):
     #     for j in range( 8 ):
+
+def starCoordinatesList(array):
+#Function to make a list with the coordinates of the stars and their 8 direct neighbors, who are in the array input of this function.
+#Parameter array : The array with the pixels of the stars.
+
+    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
+
+    for i in range( len(array) ): #Go through the input array.
+        outputArray = np.vstack((outputArray, np.array([array[i,0], array[i,1]]))) #Add the star coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] - 1]))) #Add the neighbor above coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] - 1]))) #Add the upper right side neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1]]))) #Add the right neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] + 1]))) #Add the lower right side neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] + 1])))  #Add the neighbor below coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] + 1])))  #Add the lower left side neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1]])))  # Add the left neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] - 1])))  # Add the upper left side neighbor coordinate to the output array.
+
+    outputArray = np.delete(outputArray, 0, 0) #Delete the first row because it is [0,0].
+    return outputArray

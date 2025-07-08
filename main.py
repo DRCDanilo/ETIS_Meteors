@@ -112,48 +112,56 @@ remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to th
 remainPixels = remainPixels.astype(int)
 print('There are ',len(remainPixels), 'pixels.')
 print(remainPixels)
+#
+# #finalMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
+#
+# #displayPixels(remainPixels, finalMatrix, file_path)
+#
+#
+# suma = PositiveEventsMatrix + NegativeEventsMatrix #The total number of events in all the data
+# #Matrix to make the mask
+# mask = np.ones((numPixelsY + 1, numPixelsX + 1))
+# mask = NaNMask(remainPixels, mask) #Mask : NaN terms in stars and meteor, 1 the rest of the pixels
+# mask = suma * mask #Keep just te background without stars and meteor
+# justNaN = np.isnan(mask)
+# justNaN = np.logical_not(justNaN) #Mask to remove NaN elements
+# background = mask[justNaN] #Keep just the background without NaN elements
+# getParameters(background) #Get the parameters of the background
+#
+# print('The real background information is :') #Analysis of the real background
+# #maskRealBackground = background != 0
+# maskZeroEvents = background == 0 #Mask with only the pixels with zero events
+# maskRealBackground = np.logical_not(maskZeroEvents)
+# realBackground  = background[maskRealBackground] #Get the real background
+# getParameters(realBackground) #Get the parameters of the real background
+#
+# #Make NaN the pixels with zero events in the mask matrix
+#
+#
+#
+# fig1, ax1 = plt.subplots()
+# fig2, ax2 = plt.subplots()
+#
+# pos1 = ax1.imshow(suma, cmap = 'cividis_r', interpolation = 'none')
+# fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
+# ax1.set_title("Total Events Matrix")
+# ax1.set_xlabel('pixels')
+# ax1.set_ylabel('pixels')
+# displayExtraInfo(ax1, file_path)
+#
+# pos2 = ax2.imshow(mask, cmap = 'cividis_r', interpolation = 'none', vmax = 25)
+# fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
+# ax2.set_title('Mask Matrix')
+# ax2.set_xlabel('pixels')
+# ax2.set_ylabel('pixels')
+# displayExtraInfo(ax2, file_path)
+#
+# plt.show()
 
-#finalMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
-#displayPixels(remainPixels, finalMatrix, file_path)
-
-
-suma = PositiveEventsMatrix + NegativeEventsMatrix #The total number of events in all the data
-#Matrix to make the mask
-mask = np.ones((numPixelsY + 1, numPixelsX + 1))
-mask = NaNMask(remainPixels, mask) #Mask : NaN terms in stars and meteor, 1 the rest of the pixels
-mask = suma * mask #Keep just te background without stars and meteor
-justNaN = np.isnan(mask)
-justNaN = np.logical_not(justNaN) #Mask to remove NaN elements
-background = mask[justNaN] #Keep just the background without NaN elements
-getParameters(background) #Get the parameters of the background
-
-print('The real background information is :') #Analysis of the real background
-maskRealBackground = background != 0
-realBackground  = background[maskRealBackground] #Get the real background
-getParameters(realBackground) #Get the parameters of the real background
-
-
-fig1, ax1 = plt.subplots()
-fig2, ax2 = plt.subplots()
-
-pos1 = ax1.imshow(suma, cmap = 'cividis_r', interpolation = 'none')
-fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
-ax1.set_title("Total Events Matrix")
-ax1.set_xlabel('pixels')
-ax1.set_ylabel('pixels')
-displayExtraInfo(ax1, file_path)
-
-pos2 = ax2.imshow(mask, cmap = 'cividis_r', interpolation = 'none', vmax = 25)
-fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
-ax2.set_title('Mask Matrix')
-ax2.set_xlabel('pixels')
-ax2.set_ylabel('pixels')
-displayExtraInfo(ax2, file_path)
-
-plt.show()
-
-
+test = starCoordinatesList(remainPixels)
+print("The coordinates array length is :", len(test))
+print(test)
 
 
 
