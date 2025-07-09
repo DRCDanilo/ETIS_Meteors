@@ -9,8 +9,8 @@ from events_display import *
 
 #Import the data file
 # ___________ FOR METEOR 00:29:40 _______________________
-file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
-#file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
+#file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
+file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
 #file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/stars_0037.csv' # Modify according to the file path
 #file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_235935.csv' # Modify according to the file path
 #file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_232112_big.csv' # Modify according to the file path
@@ -104,14 +104,14 @@ pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dty
 ###############################################
 
 #Filtering to just have the 6 stars
-unitOfTime = 1000000 # Parameter to define the unit of time of the events
-pixelsEvents = addEventsByTime(pixelsEvents, timeData, unitOfTime) #Add the number of events per unit of time to every pixel
-remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8, 5) #Filtering by direct neighbors
-remainPixels = filterArray(remainPixels, 20, 4, 1) #Filtering by number of events per unit of time
-remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to the same star
-remainPixels = remainPixels.astype(int)
-print('There are ',len(remainPixels), 'pixels.')
-print(remainPixels)
+# unitOfTime = 1000000 # Parameter to define the unit of time of the events
+# pixelsEvents = addEventsByTime(pixelsEvents, timeData, unitOfTime) #Add the number of events per unit of time to every pixel
+# remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8, 5) #Filtering by direct neighbors
+# remainPixels = filterArray(remainPixels, 20, 4, 1) #Filtering by number of events per unit of time
+# remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to the same star
+# remainPixels = remainPixels.astype(int)
+# print('There are ',len(remainPixels), 'pixels.')
+# print(remainPixels)
 #
 # #finalMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 #
@@ -159,10 +159,67 @@ print(remainPixels)
 # plt.show()
 
 
-#test = starCoordinatesList(remainPixels)
-test = meteorCoordinatesList(3,4,3,4)
-print("The coordinates array length is :", len(test))
-print(test)
+#MERCREDI 9 JUILLET. RÉEL FOND DEUXIÈME FICHIER
+#Have just the 4 stars
+#Find the 1st star
+p = np.where( ( pixelsEvents[:,0] == 384 ) & ( pixelsEvents[:,1] == 426) )
+#Array with just the stars
+justStars = pixelsEvents[p]
+#Find the 2nd star
+p = np.where( ( pixelsEvents[:,0] == 534 ) & ( pixelsEvents[:,1] == 306) )
+#Add the 2nd star
+justStars = np.vstack((justStars, pixelsEvents[p]))
+#Find the 3rd star
+p = np.where( ( pixelsEvents[:,0] == 412 ) & ( pixelsEvents[:,1] == 216) )
+#Add the 3rd star
+justStars = np.vstack((justStars, pixelsEvents[p]))
+#Find the 4th star
+p = np.where( ( pixelsEvents[:,0] == 236 ) & ( pixelsEvents[:,1] == 289) )
+#Add the 4th star
+justStars = np.vstack((justStars, pixelsEvents[p]))
+justStars = justStars.astype(int)
+print(justStars)
+
+#Get the parameters of the background
+suma = PositiveEventsMatrix + NegativeEventsMatrix #The total number of events in all the data
+#Matrix to make the mask
+mask = np.ones((numPixelsY + 1, numPixelsX + 1))
+mask = NaNMask(justStars, mask) #Mask : NaN terms in stars and meteor, 1 the rest of the pixels
+mask = suma * mask #Keep just te background without stars and meteor
+justNaN = np.isnan(mask)
+justNaN = np.logical_not(justNaN) #Mask to remove NaN elements
+background = mask[justNaN] #Keep just the background without NaN elements
+getParameters(background) #Get the parameters of the background
+
+print('The real background information is :') #Analysis of the real background
+maskRealBackground = background != 0
+realBackground  = background[maskRealBackground] #Get the real background
+getParameters(realBackground) #Get the parameters of the real background
+
+
+#Process to have the real background along the time
+copyEvents = events #Copy the array of all the events.
+starsPixelsDelete = starCoordinatesList(justStars) #Create the array with the coordinates of the stars and neighbors.
+print("Length of stars and neighb is : ", len(starsPixelsDelete))
+for i in range( len ( starsPixelsDelete ) ): #Delete the events of stars and neighbors from the array.
+    indexs = np.where((copyEvents[:, 0] == starsPixelsDelete[i, 0]) & (copyEvents[:, 1] == starsPixelsDelete[i, 1]))
+    arrayDespues = np.delete(copyEvents, indexs, 0)
+    copyEvents = arrayDespues
+
+print("The length of the original array after deleting the stars' events is :", len(copyEvents))
+
+meteorPixelsDelete = meteorCoordinatesList(223, 231, 306, 327) #Create the array with the coordinates of the meteor's trajectory.
+
+for i in range( len ( meteorPixelsDelete ) ): #Delete the events of the meteor's trajectory from the array.
+    indexs = np.where((copyEvents[:, 0] == meteorPixelsDelete[i, 0]) & (copyEvents[:, 1] == meteorPixelsDelete[i, 1]))
+    arrayDespues = np.delete(copyEvents, indexs, 0)
+    copyEvents = arrayDespues
+
+print("The length of the original array after deleting the meteor's events is :", len(copyEvents))
+
+displayHistogram(copyEvents, 100000, file_path) #Create the histogram of the pixels of real background.
+
+
 
 
 

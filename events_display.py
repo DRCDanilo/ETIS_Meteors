@@ -803,8 +803,8 @@ def NaNMask(array, matrix):
     for r in range(len(array)):
         starNaN(array[r], matrix)
 
-    rectangleNaN(73, 93, 456, 480, matrix) # NaN square for the meteor of first file meteor.csv
-    #rectangleNaN(223, 231, 306, 327, matrix) # NaN square for the meteor of second file meteor_003019_long.csv
+    #rectangleNaN(73, 93, 456, 480, matrix) # NaN square for the meteor of first file meteor.csv
+    rectangleNaN(223, 231, 306, 327, matrix) # NaN square for the meteor of second file meteor_003019_long.csv
 
     return matrix
 
@@ -897,3 +897,5 @@ def meteorCoordinatesList(x1, x2, y1, y2):
 
     outputArray = np.delete(outputArray, 0, 0)  # Delete the first row because it is [0,0].
     return outputArray
+
+
