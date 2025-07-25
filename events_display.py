@@ -18,7 +18,7 @@ import time
 import matplotlib
 from numpy.ma.core import remainder
 
-matplotlib.use('Qt5Agg')
+#matplotlib.use('Qt5Agg') #To have better Matplotlib figures in Ubuntu
 
 
 #To display an image
@@ -34,7 +34,7 @@ from PIL import Image
 #################################################################################################################################################
 #Functions
 #################################################################################################################################################
-def CountingEventsPerPixel (matrix, xCoord, yCoord):
+def counting_events_per_pixel (matrix, xCoord, yCoord):
 #Function to fill a matrix with the number of changes per pixel.
 #Parameter matrix : matrix to fill.
 #Parameter xCoord : coordinate x pixel.
@@ -44,7 +44,7 @@ def CountingEventsPerPixel (matrix, xCoord, yCoord):
 
 
 
-def saveImage (file_path):
+def save_image (file_path):
 #Function to save the image.
 
     dataName = file_path[56:-4]
