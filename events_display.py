@@ -34,13 +34,19 @@ from PIL import Image
 #################################################################################################################################################
 #Functions
 #################################################################################################################################################
-#Function to fill a matrix with the number of changes per pixel
-def CountingEventsPerPixel (m, xCoord, yCoord):#m: matrix to fill. xCoord: coordinate x pixel. yCoord: coordinate y pixel.
-    m[yCoord, xCoord] += 1
+def CountingEventsPerPixel (matrix, xCoord, yCoord):
+#Function to fill a matrix with the number of changes per pixel.
+#Parameter matrix : matrix to fill.
+#Parameter xCoord : coordinate x pixel.
+#Parameter yCoord : coordinate y pixel.
+
+    matrix[yCoord, xCoord] += 1
 
 
-#Function to save the image
-def saveImage ():
+
+def saveImage (file_path):
+#Function to save the image.
+
     dataName = file_path[56:-4]
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
     fileImgName = dataName + '_' + actualDataTime + '.png'
@@ -51,103 +57,113 @@ def saveImage ():
     
     plt.savefig(full_path,bbox_inches='tight', pad_inches=0)
 
+
+def displayExtraInfo (axe, filePath):
 #Function to display additional information in the image
-def displayExtraInfo (axe):
-    dataName = file_path[56:]
+    dataName = filePath[56:]
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     fileImgName = dataName + '_' + actualDataTime
     axe.annotate('Data file: ' + dataName, xy = (0, -25), xycoords = 'axes points', fontsize = 8)
     axe.annotate('Date: ' + actualDataTime, xy = (0, -33), xycoords = 'axes points', fontsize = 8)
 
-#Function to display the image's histogram
-def displayHistogram():
+
+def displayHistogram(array, binWidth, filePath):
+#Function to display histogram of the input array.
+#Parameter array : The array with the pixels to make the histogram of.
+#Parameter binWidth : The parameter to define the bin width of the histogram in microseconds.
+#Parameter filePath : Variable with the location of the data file.
+
     print('Function displayHistogram')
     #Histogram
     #Variable to define the bins of the histogram
-    binWidth = 50000
+
     #Variable to know the time of the las event
-    timeLastEvent = events[-1,-1]
+    timeLastEvent = array[-1,-1]
     #Build an array with the bins for the histogram
     xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
 
     fig, ax = plt.subplots()
-    ax.hist(events[:,-1], bins=xbins, edgecolor = 'orange')
+    ax.hist(array[:,-1], bins=xbins, edgecolor = 'orange')
 
     #plot the xdata locations on the x axis:
-    ax.plot(events[:,-1], 0*events[:,2], 'd')
+    ax.plot(array[:,-1], 0*array[:,2], 'd')
 
-    plt.title("Histogram of image's events")
+    plt.title("Histogram of events")
     plt.grid(visible = True, color = 'r')
     ax.set_xlabel('Time [ms]')
     ax.set_ylabel('Number of events')
-    displayExtraInfo(ax)
+    displayExtraInfo(ax, filePath)
     ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
     
 
-#Function to display the image's bihistogram: histogram of the positive and negative events
-def displayBihistogram():
+
+def displayBihistogram(array, binWidth, filePath):
+#Function to display the bi-histogram of the input array: histogram of the positive and negative events.
+#Parameter array : The array with the pixels to make the histogram of.
+#Parameter binWidth : The parameter to define the bin width of the histogram in microseconds.
+#Parameter filePath : Variable with the location of the data file.
+
     print('Function displayHistogram')
     #Histogram
-    #Variable to define the bins of the histogram
-    binWidth = 50000
     #Variable to know the time of the las event
-    timeLastEvent = events[-1,-1]
+    timeLastEvent = array[-1,-1]
     #Build an array with the bins for the histogram
     xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
 
     #BiHistogram - Histogram for positive and negative events
     fig, ax = plt.subplots()
     #Mask for positive events
-    positiveMask = events[:,2] == 1
+    positiveMask = array[:,2] == 1
     #Mask for negative events
-    negativeMask = events[:,2] == 0
+    negativeMask = array[:,2] == 0
 
     #Plot the histogram for positive events
-    ax.hist(events[:,-1][positiveMask], bins=xbins, edgecolor = 'black', label = 'Positive Events')
+    ax.hist(array[:,-1][positiveMask], bins=xbins, edgecolor = 'black', label = 'Positive Events')
     #Plot the histogram for negative events
-    ax.hist(events[:,-1][negativeMask], weights = -np.ones_like(events[:,-1][negativeMask]), bins=xbins, edgecolor = 'black', label = 'Negative Events')
+    ax.hist(array[:,-1][negativeMask], weights = -np.ones_like(array[:,-1][negativeMask]), bins=xbins, edgecolor = 'black', label = 'Negative Events')
 
     #Plot the data (positive and negative) along the x axis
     #plot the xdata locations on the x axis:
     #ax.plot(events[:,-1][positiveMask], 0*events[:,-1][positiveMask], '+', c = 'w')
     #ax.plot(events[:,-1][negativeMask], 0*events[:,-1][negativeMask], 'o', c = 'k')
 
-    plt.title("Histogram of image's events")
+    plt.title("Histogram of events")
     plt.grid(visible = True, color = 'r')
     ax.set_xlabel('Time [ms]')
     ax.set_ylabel('Number of events')
     ax.legend()
     #Extra info image
-    displayExtraInfo(ax)
+    displayExtraInfo(ax, filePath)
     ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
 
+
+def display4Matrix(positiveMatrix, negativeMatrix, filePath):
 #Function to display the 4 matrix of the image.
 #Positive Events Matrix, Negative Events Matrix, Sum Events Matrix, Average Events Matrix
-def display4Matrix():
     print('Function display4Matrix')
 
     #Average Matrix
-    AverageMatrix = PositiveEventsMatrix - NegativeEventsMatrix
+    AverageMatrix = positiveMatrix - negativeMatrix
 
     #Sum Matrix
-    SumMatrix = PositiveEventsMatrix + NegativeEventsMatrix
+    SumMatrix = positiveMatrix + negativeMatrix
 
 
     #Display images
     #Display Positive Events Matrix
     #Variable: Max value of the matrix
-    MaxPosMatrix = np.max(PositiveEventsMatrix)
-    print('The maximun number of events in the positive matrix is: ', np.max(PositiveEventsMatrix))
-    print('The minimun number of events in the positive matrix is: ', np.min(PositiveEventsMatrix, where = PositiveEventsMatrix > 0, initial = np.inf))
+    MaxPosMatrix = np.max(positiveMatrix)
+    print('The maximun number of events in the positive matrix is: ', np.max(positiveMatrix))
+    print('The minimun number of events in the positive matrix is: ', np.min(positiveMatrix, where = positiveMatrix > 0, initial = np.inf))
 
 
     #Display Negative Events Matrix
     #Variable: Max value of the matrix
-    MaxNegMatrix = np.max(NegativeEventsMatrix)
-    print('The maximun number of events in the negative matrix is: ', np.max(NegativeEventsMatrix))
-    print('The minimun number of events in the negative matrix is: ', np.min(NegativeEventsMatrix, where = NegativeEventsMatrix > 0, initial = np.inf))
+    MaxNegMatrix = np.max(negativeMatrix)
+    print('The maximun number of events in the negative matrix is: ', np.max(negativeMatrix))
+    print('The minimun number of events in the negative matrix is: ', np.min(negativeMatrix, where = negativeMatrix > 0, initial = np.inf))
 
 
     #Display Sum Matrix
@@ -171,7 +187,7 @@ def display4Matrix():
     #print('The minimun number of events in the average matrix after transformation is: ', np.min(AverageMatrix))
 
     
-    vMaxScale = 35
+    vMaxScale = 25
 
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
@@ -179,24 +195,24 @@ def display4Matrix():
     fig4, ax4 = plt.subplots()
 
 
-    pos1 = ax1.imshow(PositiveEventsMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    pos1 = ax1.imshow(positiveMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
     ax1.set_title('Positve Events Matrix')
     ax1.set_xlabel('pixels')
     ax1.set_ylabel('pixels')
-    xyMax = np.where(PositiveEventsMatrix >= MaxPosMatrix)
+    xyMax = np.where(positiveMatrix >= MaxPosMatrix)
     ax1.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax1)
+    displayExtraInfo(ax1, filePath)
 
 
-    pos2 = ax2.imshow(NegativeEventsMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    pos2 = ax2.imshow(negativeMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
     ax2.set_title('Negative Events Matrix')
     ax2.set_xlabel('pixels')
     ax2.set_ylabel('pixels')
-    xyMax = np.where(NegativeEventsMatrix >= MaxNegMatrix)
+    xyMax = np.where(negativeMatrix >= MaxNegMatrix)
     ax2.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax2)
+    displayExtraInfo(ax2, filePath)
 
     pos3 = ax3.imshow(SumMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig3.colorbar(pos3, ax=ax3, shrink = 0.8)
@@ -205,7 +221,7 @@ def display4Matrix():
     ax3.set_ylabel('pixels')
     xyMax = np.where(SumMatrix >= MaxSumMatrix)
     ax3.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax3)
+    displayExtraInfo(ax3, filePath)
 
 
     pos4 = ax4.imshow(AverageMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
@@ -217,7 +233,7 @@ def display4Matrix():
     ax4.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
     xyMin = np.where(AverageMatrix <= MinAvgMatrix)
     ax4.annotate('Min: ('+ str(xyMin[1])+',' + str(xyMin[0])+')', xy=(xyMin[1], xyMin[0]), xytext=(xyMin[1]-75, xyMin[0]-75), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax4)
+    displayExtraInfo(ax4, filePath)
 
     plt.show()
     
@@ -225,9 +241,10 @@ def display4Matrix():
 
 
 
-#Function to display the number of events histogram of the image.
-#Could be the positive or negative histogram
+
 def displayHistoNumEvents(arrayEvents):
+#Function to display the number of events histogram of the image.
+#Could be the positive or negative histogram.
     print('Function displayHistogramPositiveE. Display an array (positive or negative events) as histogram.')
     #Histogram
     #Variable to define the bins of the histogram
@@ -251,10 +268,11 @@ def displayHistoNumEvents(arrayEvents):
     ax.annotate('Events Bin Width: ' + str(binWidth), xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
 
+
+def makePixelsHistogram(xCoord, yCoord, polarity, array):
 #Function to make an array with all the pixels in the input data file, with the total number of events (positives and
 #negatives. The output is an array with all the n pixels in the data input, and their total events number for all the
 #file duration.
-def makePixelsHistogram(xCoord, yCoord, polarity, array):
 #Parameter xCoord : The coordinate x of the pixel.
 #Parameter yCoord : The coordinate y of the pixel.
 #Parameter polarity : The polarity of the event.
@@ -291,51 +309,55 @@ def makePixelsHistogram(xCoord, yCoord, polarity, array):
     return array
 
     
-#Function to display desired pixels
-def displayPixels(array):
 
-    m = np.zeros((numPixelsY + 1, numPixelsX + 1))
+def displayPixels(array, matrix, filePath):
+#Function to display desired pixels.
+
+    #m = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
 
     for i in range( len( array[:,0] ) ):
-        fillMatrix(m, array[i, 0], array[i, 1], array[i, 4])
+        fillMatrix(matrix, array[i, 0], array[i, 1], array[i, 4])
 
-    Capella = False
-    Jupiter = False
-    Betelgeuse = False
-    Procyon = False
-    Mars = False
-    Pollux = False
-    s = np.where( (array[:, 0] == 285) & (array[:, 1] == 60) )
-    if( len(array[s]) == 1 ):
-        Capella = True
+    maxValueArray = np.max(array[:, 4])
 
 
-    s = np.where( (array[:, 0] == 530) & (array[:, 1] == 91) )
-    if( len(array[s]) == 1 ):
-        Jupiter = True
-
-
-    s = np.where( (array[:, 0] == 508) & (array[:, 1] == 266) )
-    if( len(array[s]) == 1 ):
-        Betelgeuse = True
-
-    s = np.where( (array[:, 0] == 392) & (array[:, 1] == 439) )
-    if( len(array[s]) == 1 ):
-        Procyon = True
-
-    s = np.where( (array[:, 0] == 221) & (array[:, 1] == 412) )
-    if( len(array[s]) == 1 ):
-        Mars = True
-
-    s = np.where((array[:, 0] == 259) & (array[:, 1] == 314))
-    if (len(array[s]) == 1):
-        Pollux = True
+    # Capella = False
+    # Jupiter = False
+    # Betelgeuse = False
+    # Procyon = False
+    # Mars = False
+    # Pollux = False
+    # s = np.where( (array[:, 0] == 285) & (array[:, 1] == 60) )
+    # if( len(array[s]) == 1 ):
+    #     Capella = True
+    #
+    #
+    # s = np.where( (array[:, 0] == 530) & (array[:, 1] == 91) )
+    # if( len(array[s]) == 1 ):
+    #     Jupiter = True
+    #
+    #
+    # s = np.where( (array[:, 0] == 508) & (array[:, 1] == 266) )
+    # if( len(array[s]) == 1 ):
+    #     Betelgeuse = True
+    #
+    # s = np.where( (array[:, 0] == 392) & (array[:, 1] == 439) )
+    # if( len(array[s]) == 1 ):
+    #     Procyon = True
+    #
+    # s = np.where( (array[:, 0] == 221) & (array[:, 1] == 412) )
+    # if( len(array[s]) == 1 ):
+    #     Mars = True
+    #
+    # s = np.where((array[:, 0] == 259) & (array[:, 1] == 314))
+    # if (len(array[s]) == 1):
+    #     Pollux = True
 
 
     fig1, ax1 = plt.subplots()
    
-    pos1 = ax1.imshow(m, cmap = 'cividis_r', interpolation = 'none')
+    pos1 = ax1.imshow(matrix, cmap = 'cividis_r', interpolation = 'none', vmax = maxValueArray)
     fig1.colorbar(pos1, ax = ax1, shrink = 0.8)#Colorbar
     ax1.set_title('Pixels After Filtering Process')
     ax1.set_xlabel('pixels')
@@ -344,43 +366,49 @@ def displayPixels(array):
     annotatePixels(array, ax1)
     
 
-    if( Capella ):
-        ax1.annotate('Capella', xy=(285, 60), xytext=(285+50, 60+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    # if( Capella ):
+    #     ax1.annotate('Capella', xy=(285, 60), xytext=(285+50, 60+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if ( Jupiter ):
+    #     ax1.annotate('Jupiter', xy=(530, 91), xytext=(530+50, 91+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if( Betelgeuse ):
+    #     ax1.annotate('Betelgeuse', xy=(508, 266), xytext=(508+50, 266+50), arrowprops=dict(facecolor='black', shrink=0.0005))
+    #
+    #
+    # if( Procyon ):
+    #     ax1.annotate('Procyon', xy=(392, 439), xytext=(392+50, 439+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if( Mars ):
+    #     ax1.annotate('Mars', xy=(221, 412), xytext=(221+50, 412+50), arrowprops=dict(facecolor='black', shrink=0.005))
+    #
+    # if (Pollux):
+    #     ax1.annotate('Pollux', xy=(259, 314), xytext=(259 + 50, 314 + 50),
+    #                  arrowprops=dict(facecolor='black', shrink=0.005))
 
-    if ( Jupiter ):
-        ax1.annotate('Jupiter', xy=(530, 91), xytext=(530+50, 91+50), arrowprops=dict(facecolor='black', shrink=0.005))
-
-    if( Betelgeuse ):
-        ax1.annotate('Betelgeuse', xy=(508, 266), xytext=(508+50, 266+50), arrowprops=dict(facecolor='black', shrink=0.0005))
-
-
-    if( Procyon ):
-        ax1.annotate('Procyon', xy=(392, 439), xytext=(392+50, 439+50), arrowprops=dict(facecolor='black', shrink=0.005))
-
-    if( Mars ):
-        ax1.annotate('Mars', xy=(221, 412), xytext=(221+50, 412+50), arrowprops=dict(facecolor='black', shrink=0.005))
-
-    if (Pollux):
-        ax1.annotate('Pollux', xy=(259, 314), xytext=(259 + 50, 314 + 50),
-                     arrowprops=dict(facecolor='black', shrink=0.005))
-
-    displayExtraInfo(ax1)
+    displayExtraInfo(ax1, filePath)
 
 
     #saveImage()
 
     plt.show()
 
-#Function to put a value in an specific pixel in a matrix 
-def fillMatrix (m, xCoord, yCoord, value):#m: matrix to fill. xCoord: coordinate x pixel. yCoord: coordinate y pixel, value: value to put
-    m[yCoord, xCoord] = value
+
+def fillMatrix (matrix, xCoord, yCoord, value):#m: matrix to fill. xCoord: coordinate x pixel. yCoord: coordinate y pixel, value: value to put
+#Function to put a value in a specific pixel in a matrix.
+#Parameter matrix : matrix to fill.
+#Parameter xCoord : coordinate x pixel.
+#Parameter yCoord : coordinate y pixel.
+
+    matrix[yCoord, xCoord] = value
 
 
 
 
 
-#Function to filter an array
+
 def filterArray(array, value, eventType, condition):
+#Function to filter an array.
 #Parameter array: Array to filter
 #Parameter value: Value use to filter
 #Parameter eventType : Choose 1 to filter positive events, 2 to filter negative events, 3 to filter total events. The
@@ -396,8 +424,9 @@ def filterArray(array, value, eventType, condition):
         mask = array[:, eventType + 1 ] < value
         return array[mask]
 
-#Function to display histogram with parameters as time and zone of the image
+
 def displayZoneHistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
+#Function to display histogram with parameters as time and zone of the image.
 #Parameter binwidth : Define the bin width for the histogram
 #Parameter timeStop : Time limit to display the histogram
 #Parameter xCoord : x coordinate of the top leftmost pixel of the selected zone
@@ -438,8 +467,9 @@ def displayZoneHistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     #plt.show()
 
 
-#Function to display bihistogram with parameters as time and zone of the image: histogram of positive and negative events
+
 def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
+#Function to display bihistogram with parameters as time and zone of the image: histogram of positive and negative events.
 #Parameter binwidth : Define the bin width for the histogram
 #Parameter timeStop : Time limit to display the histogram
 #Parameter xCoord : x coordinate of the top leftmost pixel of the selected zone
@@ -494,8 +524,9 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     #plt.show()
 
 
-#Function to filter pixels by direct neighbors with a x number of events.
+
 def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors, numColumn):
+#Function to filter pixels by direct neighbors with a x number of events.
 #The function search in every pixel in the input array, looking for at least one direct neighbor (up, down, left or right)
 #with at least the numMinEVents in any neighbor
 #Parameter array : The array wih the pixels to filter
@@ -571,11 +602,12 @@ def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors, numColumn):
     return outputArray
 
 
-# Function to identify if two or more pixels who are direct neighbors, belong to a single star.
+
 def isStar(array):
-    # The function search in every pixel in the input array, looking for directs neighbors (up, down, left or right)
-    # and identify the pixel with the highest number of events as the star
-    # Parameter array : The array wih the pixels to filter
+#Function to identify if two or more pixels who are direct neighbors, belong to a single star.
+#The function search in every pixel in the input array, looking for directs neighbors (up, down, left or right)
+#and identify the pixel with the highest number of events as the star
+#Parameter array : The array wih the pixels to filter
 
     outputArray = np.zeros([1, array.shape[1]], dtype=int)
     for i in range(len(array[:, 0])):
@@ -643,28 +675,31 @@ def isStar(array):
     return outputArray
 
 
-#Function to annotate - make more visible some pixels
+
 def annotatePixels(array, ax):
-    #The function annotates all the pixels inside the array
+#Function to annotate - make more visible some pixels
+#The function annotates all the pixels inside the array
 
     for i in range( len( array[:,0] ) ) :
-        ax.annotate(str(i), xy=(array[i,0], array[i,1]), xytext=(array[i,0]+15, array[i,1]+15), arrowprops=dict(facecolor='black', shrink=0.005))
+        ax.annotate(str(i), xy=(array[i,0]+3, array[i,1]), xytext=(array[i,0]+12, array[i,1]), arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=6))
 
 
 
-# Function to analyze along the time an array and determine if here is continuity of events.
+
 def continuity(array, e):
-# The function look for continuity in the array, that means look for a number of events in the array. The number of events is determined by the parameter e.
-# Parameter array : The array to analyze
-# Parameter e : The minimum number of events in the array to have continuity
+#Function to analyze along the time an array and determine if here is continuity of events.
+#The function look for continuity in the array, that means look for a number of events in the array. The number of events is determined by the parameter e.
+#Parameter array : The array to analyze
+#Parameter e : The minimum number of events in the array to have continuity
 
     if( len(array) >= e ):
         return True
     return None
 
 
-# Function to identify a star looking for the continuity of the events in a time interval.
+
 def continuousStar(array, interval, timeStop, level):
+#Function to identify a star looking for the continuity of the events in a time interval.
 #Parameter array : The array where the possible stars are.
 #Parameter interval : The time interval to evaluate the continuity of the events.
 #Parameter timeStop : The time limit to look for the continuity of the events.
@@ -695,28 +730,33 @@ def continuousStar(array, interval, timeStop, level):
     return outputArray
 
 
-# Function to calculate the number of events per second or per a determined amount of time, of one pixel.
-def eventsByTime(numTotalEvents, totalTimeData, unitTime):
-# Parameter numTotalEvents : The total number of events of the pixel.
-# Parameter totalTimeData : The total duration time of the data.
-# Parameter unitTime : The unit time for the reference in microseconds.
 
-    eventsPerTime = ( unitTime * numTotalEvents ) / ( totalTimeData )
+def eventsByTime(numTotalEvents, totalTimeData, unitOfTime):
+#Function to calculate the number of events per second or per a determined amount of time, of one pixel.
+#Parameter numTotalEvents : The total number of events of the pixel.
+#Parameter totalTimeData : The total duration time of the data.
+#Parameter unitOfTime : The time unit for the reference in microseconds.
+
+    eventsPerTime = ( unitOfTime * numTotalEvents ) / ( totalTimeData )
     return eventsPerTime
 
 
-# Function to add the number of events per second or per a determined amount of time, to an array of pixels.
-def addEventsByTime(array, unitOfTime):
-# Parameter array : The array with pixels to add their number of events per amount of time.
-# Parameter unitOfTime : The unit of time for the reference.
+def addEventsByTime(array, totalTimeData, unitOfTime):
+#Function to add the number of events per second or per a determined amount of time, to an array of pixels.
+#Parameter array : The array with pixels to add their number of events per amount of time.
+#Parameter totalTimeData : The total duration time of the data.
+#Parameter unitOfTime : The time unit for the reference.
 
     for i in range( len( array ) ):
-        numToAdd = eventsByTime( array[i, 4], timeData, unitOfTime)
+        numToAdd = eventsByTime( array[i, 4], totalTimeData, unitOfTime)
         array[i, 5] = numToAdd
     return array
 
-#Function to fill wih NaN a star pixel and its 8 neighbors pixels
+
 def starNaN(array, matrix):
+#Function to fill with NaN a star pixel and its 8 neighbors pixels.
+#Parameter array : The star to fill with NaN, in form of an array with the coordinates in the form = [x,y,...].
+#Parameter matrix : The matrix to form the mask in.
 
     fillMatrix(matrix, array[0], array[1], np.nan) #Star pixel
     fillMatrix(matrix, ( array[0] + 1 ), array[1], np.nan)  #Right neighbor pixel
@@ -730,161 +770,132 @@ def starNaN(array, matrix):
 
 
 def rectangleNaN(x1, x2, y1, y2, matrix):
-
+#Function to fill a rectangle (the meteor space) with NaN terms.
+#Parameter x1 : The x coordinate where the rectangle starts.
+#Parameter x2 : The x coordinate where the rectangle ends.
+#Parameter y1 : The y coordinate where the rectangle starts.
+#Parameter y2 : The y coordinate where the rectangle ends.
+#Parameter matrix : The matrix to form the mask in.
 
     for j in range(y2-y1):
         for i in range(x2-x1):
             fillMatrix(matrix, i+x1, j+y1, np.nan)
 
 
+def neighborsOnes(array, matrix):
+#Function to fill with ones (1) terms the 8 neighbors pixels of a star. The star pixel will not be filled.
+#Parameter array : The star to fill the neighbors with ones (1) terms, in form of an array with the coordinates in the form = [x,y,...].
+#Parameter matrix : The matrix to form the mask in.
+
+    fillMatrix(matrix, ( array[0] + 1 ), array[1], 1)  #Right neighbor pixel
+    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] + 1 ), 1)  #Right-down neighbor pixel
+    fillMatrix(matrix, array[0], ( array[1] + 1 ), 1)  #Down neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] + 1 ), 1)  # Left-down neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), array[1], 1)  # Left neighbor pixel
+    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] - 1 ), 1)  # Left-up neighbor pixel
+    fillMatrix(matrix, array[0], ( array[1] - 1 ), 1)  # Up neighbor pixel
+    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), 1)  # Right-up neighbor pixel
 
 
 def NaNMask(array, matrix):
+#Function to create a matrix with NaN terms calling the others functions.
 
     for r in range(len(array)):
         starNaN(array[r], matrix)
 
-    rectangleNaN(73, 93, 456, 480, matrix) # NaN square for the meteor
+    #rectangleNaN(73, 93, 456, 480, matrix) # NaN square for the meteor of first file meteor.csv
+    rectangleNaN(223, 231, 306, 327, matrix) # NaN square for the meteor of second file meteor_003019_long.csv
+
+    return matrix
+
+def onesMask(array, matrix):
+#Function to create a matrix with ones terms calling the others functions.
+
+    for r in range(len(array)):
+        neighborsOnes(array[r], matrix)
+
     return matrix
 
 
+def getParameters(array):
+#Function to calculate the average, the median, the minimum and the maximum of an array of pixels.
+#Parameter array : The array with the pixels to calculate the parameters for.
+
+    lengthData = len(array)
+
+    maskZero = array == 0
+    arrayZero = array[maskZero]
+
+    maskNoZero = array != 0
+    arrayNoZero = array[maskNoZero]
+
+    arraySum = np.sum(array, dtype=int)
+
+    totalMean = np.mean(array)
+
+    totalMedian = np.median(array)
+
+    totalMin = np.min(array)
+
+    totalMax = np.max(array)
+
+    print("The length of the pixels' array is: ", lengthData)
+    print('The total number of pixels with zero events is : ', len(arrayZero))
+    print('The total number of pixels with NON-ZERO events is : ', len(arrayNoZero))
+    print("The total sum of pixels' events is : ", arraySum)
+    print("The mean of pixels' events is : ", totalMean)
+    print("The median of pixels' events is : ", totalMedian)
+    print("The number minimum of events in the array is : ", totalMin)
+    print("The number maximum of events in the array is : ", totalMax)
 
 
-#################################################################################################################################################
-#Main Program
-#################################################################################################################################################
-
-#Import the data file
-# ___________ FOR METEOR 00:29:40 _______________________
-#file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
-file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor.csv' # Modify according to the file path
+# def isMeteor(array):
+#Function to identify a meteor trajectory form an array.
+#Parameter array : The array with the pixels to identify the trajectory of.
 
 
-#Message text
-##dataName = file_path[55:-4]
-##actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-##fileImgName = dataName + '_' + actualDataTime
+# Function to identify a pixel alone without neighbors pixels and delete it form an array.
+def noPixelAlone(array):
+# Parameter array : The array with the pixels to identify the pixels alone of.
 
+    outputArray = np.zeros([1, array.shape[1]], dtype=int)
+    # for i in range( len( array[:, 0] ) ):
+    #     for j in range( 8 ):
 
-#start = time.time()#To count the time to read the file. Delete this
-with open(file_path, 'r') as csv_file:#Read the file
-    reader = csv.reader(csv_file)
-    events = np.array(list(reader), dtype=int)#Originally, dtype=float, I changed to int because there was an error trying
-    events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
+def starCoordinatesList(array):
+#Function to make a list with the coordinates of the stars and their 8 direct neighbors, who are in the array input of this function.
+#Parameter array : The array with the pixels of the stars.
 
+    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
 
-#CODE TO TEST FILTERING. AS IT IS LONGER THANT THE REFERENCE DATA, IT IS NECESSARY TO HAVE THE SAME TIME INTERVAL
-#filter the file by time
-# if ( events[-1,-1] > 1461730 ) :
-#     mask = events[:, -1] <= 1461730
-#     events = events[mask]
-#     events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
-#     print('Already filered by time')
-#     print('The first event is : ', events[0])
-#     print('The last event is : ', events[-1])
-#     print('The total time is ' , events[-1,-1]-events[0,-1])
+    for i in range( len(array) ): #Go through the input array.
+        outputArray = np.vstack((outputArray, np.array([array[i,0], array[i,1]]))) #Add the star coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] - 1]))) #Add the neighbor above coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] - 1]))) #Add the upper right side neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1]]))) #Add the right neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] + 1]))) #Add the lower right side neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] + 1])))  #Add the neighbor below coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] + 1])))  #Add the lower left side neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1]])))  # Add the left neighbor coordinate to the output array.
+        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] - 1])))  # Add the upper left side neighbor coordinate to the output array.
 
+    outputArray = np.delete(outputArray, 0, 0) #Delete the first row because it is [0,0].
+    return outputArray
 
-#Size of the image/matrix
-numPixelsX = max(events[ :, 0])
-numPixelsY = max(events[ :, 1])
-print('The number of pixels in x is', numPixelsX + 1)
-print('The number of pixels in y is', numPixelsY + 1)
+def meteorCoordinatesList(x1, x2, y1, y2):
+#Function to make a list with the coordinates of the rectangle where the meteor's trajectory is.
+#Parameter x1 : The x coordinate where the rectangle starts.
+#Parameter x2 : The x coordinate where the rectangle ends.
+#Parameter y1 : The y coordinate where the rectangle starts.
+#Parameter y2 : The y coordinate where the rectangle ends.
 
-#Total time of the data
-timeData = events[-1, -1]
-print('The total time is ' , events[-1, -1])
+    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
 
+    for j in range((y2-y1)+1):
+        for i in range((x2-x1)+1):
+            outputArray = np.vstack((outputArray, np.array([i+x1, j+y1]))) #Add the coordinate to the output array.
 
-#Matrix for events
-PositiveEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
-NegativeEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
+    outputArray = np.delete(outputArray, 0, 0)  # Delete the first row because it is [0,0].
+    return outputArray
 
-
-#Array to count the events per pixel. nx5 = [xCoord, yCoord, positiveEvents, negativeEvents, totalEvents]
-pixelsEvents = np.zeros([1, 5], dtype = int)
-
-#Loop through events (data) array to fill the event matrix and arrays
-for i in range(len(events)):
-
-    pixelsEvents = makePixelsHistogram(events[i,0], events[i,1], events[i,2], pixelsEvents)
-
-    if (events[i,2] == 1):
-        CountingEventsPerPixel(PositiveEventsMatrix, events[i,0], events[i,1])
-
-    elif (events[i,2] == 0):
-        CountingEventsPerPixel(NegativeEventsMatrix, events[i,0], events[i,1])
-
-
-#Delete the first row of pixelsEvents because is 0,0,0,0,0
-pixelsEvents = np.delete(pixelsEvents, 0, 0)
-
-#Add a column for the number of events per time unit (i.e. events x second)
-pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = float ) ) )  #Add the pixel to the array
-
-
-
-# # #Test to filter just the stars and find out if the method works.
-# remainPixels = directNeighbors(pixelsEvents, 1, 3, 8)
-# remainPixels = filterArray(remainPixels, 5, 3, 1)
-# mean = np.ceil(np.mean(remainPixels[:, -1]))
-# print('The average number of events in the array is : ', mean)
-# remainPixels = filterArray(remainPixels, mean, 3, 1)
-# remainPixels = isStar(remainPixels)
-# print('There are ', len(remainPixels), 'possible stars')
-# print('The possible stars are: \n', remainPixels)
-# displayPixels(remainPixels)
-
-
-#display4Matrix()
-
-
-# displayZoneHistogram(20000, 600000, 284, 59, 3, 'Capella')
-# displayZoneBihistogram(20000, 600000, 284, 59, 3, 'Capella')
-# plt.show()
-
-###############################################
-#TEST FOR THE NUMBER OF EVENTS PER UNIT OF TIME
-###############################################
-
-unitOfTime = 1000000 # Parameter
-
-pixelsEvents = addEventsByTime(pixelsEvents, unitOfTime)
-remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8,5)
-remainPixels = filterArray(remainPixels, 20, 4, 1)
-remainPixels = isStar(remainPixels)
-remainPixels = remainPixels.astype(int)
-print('quedan :',len(remainPixels))
-print(remainPixels)
-
-
-mask = np.ones((numPixelsY + 1, numPixelsX + 1))
-mask = NaNMask(remainPixels, mask)
-# SumMatrix = PositiveEventsMatrix + NegativeEventsMatrix
-# NaNMask = NaNMask * SumMatrix
-fig1, ax1 = plt.subplots()
-
-pos1 = ax1.imshow(mask, cmap='cividis_r', interpolation='none')
-fig1.colorbar(pos1, ax=ax1, shrink=0.8)  # Colorbar
-ax1.set_title('Pixels After Filtering Process')
-ax1.set_xlabel('pixels')
-ax1.set_ylabel('pixels')
-displayExtraInfo(ax1)
-plt.show()
-
-
-
-# display4Matrix()
-
-
-###############################################
-#TEST FOR THE MASK NaN FOR THE BACKGROUND
-###############################################
-# mask = np.ones((1, 3))
-# mask[0,0] = np.nan
-# print('The mask is : ', mask)
-# numbers = [2, 4, 6]
-# print('The the nulbers are : ', numbers)
-# r = mask * numbers
-# print('The r is : ', r)
 
