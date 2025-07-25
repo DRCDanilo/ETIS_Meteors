@@ -9,8 +9,10 @@ from events_display import * #To import all the functions developped in this int
 
 #Import the data file
 # ___________ FOR METEOR 00:29:40 _______________________
+
 file_path = 'D:\Documentos pc Acer\Descargas pc Acer\ETIS\dataFiles\meteor.csv' # Modify according to the file path
 #file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
+
 #file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/stars_0037.csv' # Modify according to the file path
 #file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_235935.csv' # Modify according to the file path
 #file_path = '/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_232112_big.csv' # Modify according to the file path
@@ -66,14 +68,14 @@ pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dty
 ###############################################
 
 #Filtering to just have the 6 stars
-unitOfTime = 1000000 # Parameter to define the unit of time of the events
-pixelsEvents = addEventsByTime(pixelsEvents, timeData, unitOfTime) #Add the number of events per unit of time to every pixel
-remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8, 5) #Filtering by direct neighbors
-remainPixels = filterArray(remainPixels, 20, 4, 1) #Filtering by number of events per unit of time
-remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to the same star
-remainPixels = remainPixels.astype(int)
-print('There are ',len(remainPixels), 'pixels.')
-print(remainPixels)
+# unitOfTime = 1000000 # Parameter to define the unit of time of the events
+# pixelsEvents = addEventsByTime(pixelsEvents, timeData, unitOfTime) #Add the number of events per unit of time to every pixel
+# remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8, 5) #Filtering by direct neighbors
+# remainPixels = filterArray(remainPixels, 20, 4, 1) #Filtering by number of events per unit of time
+# remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to the same star
+# remainPixels = remainPixels.astype(int)
+# print('There are ',len(remainPixels), 'pixels.')
+# print(remainPixels)
 #
 # #finalMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 #
@@ -119,6 +121,12 @@ print(remainPixels)
 # displayExtraInfo(ax2, file_path)
 #
 # plt.show()
+
+
+
+
+
+
 
 
 
