@@ -139,7 +139,7 @@ def displayBihistogram(array, binWidth, filePath):
     plt.show()
 
 
-def display4Matrix(positiveMatrix, negativeMatrix, filePath):
+def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
 #Function to display the 4 matrix of the image.
 #Positive Events Matrix, Negative Events Matrix, Sum Events Matrix, Average Events Matrix
     print('Function display4Matrix')

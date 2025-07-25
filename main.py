@@ -32,12 +32,12 @@ NegativeEventsMatrix = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
 
 #Array to count the events per pixel. nx5 = [xCoord, yCoord, positiveEvents, negativeEvents, totalEvents]
-pixelsEvents = np.zeros([1, 5], dtype = int)
+#pixelsEvents = np.zeros([1, 5], dtype = int)
 
 #Loop through events (data) array to fill the event matrix and arrays
 for i in range(len(events)):
 
-    pixelsEvents = makePixelsHistogram(events[i,0], events[i,1], events[i,2], pixelsEvents)
+    #pixelsEvents = makePixelsHistogram(events[i,0], events[i,1], events[i,2], pixelsEvents)
 
     if (events[i,2] == 1):
         counting_events_per_pixel(PositiveEventsMatrix, events[i,0], events[i,1])
@@ -46,10 +46,10 @@ for i in range(len(events)):
         counting_events_per_pixel(NegativeEventsMatrix, events[i,0], events[i,1])
 
 
-
 #Delete the first row of pixelsEvents because is 0,0,0,0,0
-pixelsEvents = np.delete(pixelsEvents, 0, 0)
+#pixelsEvents = np.delete(pixelsEvents, 0, 0)
 
 #Add a column for the number of events per time unit (i.e. events x second)
-pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = float ) ) )  #Add the pixel to the array
+#pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = float ) ) )  #Add the pixel to the array
 
+display_4_matrices(PositiveEventsMatrix, NegativeEventsMatrix, file_path)
