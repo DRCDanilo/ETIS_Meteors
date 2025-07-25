@@ -140,54 +140,46 @@ def displayBihistogram(array, binWidth, filePath):
 
 
 def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
-#Function to display the 4 matrix of the image.
-#Positive Events Matrix, Negative Events Matrix, Sum Events Matrix, Average Events Matrix
-    print('Function display4Matrix')
-
-    #Average Matrix
+#Function to display the 4 matrices of the data:
+#Positive events matrix, negative events matrix, total events matrix, average events Matrix
+#Parameter positiveMatrix : The positive events matrix.
+#Parameter negativeMatrix : The negative events matrix.
+#Parameter filePath : The data file path.
+    
+    #Total events matrix
+    SumMatrix = positiveMatrix + negativeMatrix
+    #Average events matrix
     AverageMatrix = positiveMatrix - negativeMatrix
 
-    #Sum Matrix
-    SumMatrix = positiveMatrix + negativeMatrix
-
-
     #Display images
-    #Display Positive Events Matrix
-    #Variable: Max value of the matrix
+    #Display positive events matrix
+    #Variable MaxPosMatrix : Max value of the matrix
     MaxPosMatrix = np.max(positiveMatrix)
     print('The maximun number of events in the positive matrix is: ', np.max(positiveMatrix))
     print('The minimun number of events in the positive matrix is: ', np.min(positiveMatrix, where = positiveMatrix > 0, initial = np.inf))
 
-
-    #Display Negative Events Matrix
-    #Variable: Max value of the matrix
+    #Display negative events matrix
+    #Variable MaxNegMatrix : Max value of the matrix
     MaxNegMatrix = np.max(negativeMatrix)
     print('The maximun number of events in the negative matrix is: ', np.max(negativeMatrix))
     print('The minimun number of events in the negative matrix is: ', np.min(negativeMatrix, where = negativeMatrix > 0, initial = np.inf))
 
-
-    #Display Sum Matrix
-    #Variable: Max value of the matrix
+    #Display total events matrix
+    #Variable MaxSumMatrix : Max value of the matrix
     MaxSumMatrix = np.max(SumMatrix)
     print('The maximun number of events in the sum matrix is: ', np.max(SumMatrix))
     print('The minimun number of events in the sum matrix is: ', np.min(SumMatrix, where = SumMatrix > 0, initial = np.inf))
 
-
-    #Display Average Matrix
-    #Variable: Max value of the matrix
+    #Display average events matrix
+    #Variable MaxAvgMatrix : Max value of the matrix
     MaxAvgMatrix = np.max(AverageMatrix)
-    #Variable: Min value of the matrix
+    #Variable MinAvgMatrix : Min value of the matrix
     MinAvgMatrix = np.min(AverageMatrix)
     print('The maximun number of events in the average matrix is: ', np.max(AverageMatrix))
     print('The minimun number of events in the average matrix is: ', np.min(AverageMatrix))
 
-    #Transform the range values of AverageMatrix to 0-255 to display the image
-    #AverageMatrix =        ( (255) / (np.max(AverageMatrix) - np.min(AverageMatrix)) )  * (AverageMatrix - np.min(AverageMatrix))      
-    #print('The maximun number of events in the average matrix after transformation is: ', np.max(AverageMatrix))
-    #print('The minimun number of events in the average matrix after transformation is: ', np.min(AverageMatrix))
-
-    
-    vMaxScale = 25
+    #Variable vMaxScale : Used as max value in the color scale next to the images
+    vMaxScale = 20
 
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
@@ -216,7 +208,7 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
 
     pos3 = ax3.imshow(SumMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig3.colorbar(pos3, ax=ax3, shrink = 0.8)
-    ax3.set_title('Sum Events Matrix')
+    ax3.set_title('Total Events Matrix')
     ax3.set_xlabel('pixels')
     ax3.set_ylabel('pixels')
     xyMax = np.where(SumMatrix >= MaxSumMatrix)
