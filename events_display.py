@@ -47,20 +47,21 @@ def counting_events_per_pixel (matrix, xCoord, yCoord):
 def save_image (file_path):
 #Function to save the image.
 
-    dataName = file_path[56:-4]
+    dataName = file_path[55:-4]
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_' + actualDataTime + '.png'
+    fileImgName = dataName + '_' + actualDataTime + '.pdf'
 
     save_folder = "/users/danidelr86/Téléchargements/ETIS_stars/images/article_20241213T003019"
 
     full_path = os.path.join(save_folder, fileImgName)
     
-    plt.savefig(full_path,bbox_inches='tight', pad_inches=0)
+    #plt.savefig(full_path,bbox_inches='tight', pad_inches=0)
+    plt.savefig(fileImgName,bbox_inches='tight', dpi=600)
 
 
 def displayExtraInfo (axe, filePath):
 #Function to display additional information in the image
-    dataName = filePath[56:]
+    dataName = filePath[55:]
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     fileImgName = dataName + '_' + actualDataTime
     axe.annotate('Data file: ' + dataName, xy = (0, -25), xycoords = 'axes points', fontsize = 8)
@@ -186,7 +187,6 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     fig3, ax3 = plt.subplots()
     fig4, ax4 = plt.subplots()
 
-
     pos1 = ax1.imshow(positiveMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
     ax1.set_title('Positve Events Matrix')
@@ -196,6 +196,10 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     ax1.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
     displayExtraInfo(ax1, filePath)
 
+    dataName = filePath[55:-4]
+    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    fileImgName = dataName + '_' + actualDataTime + 'A' + '.pdf'
+    fig1.savefig(fileImgName,bbox_inches='tight', dpi=600)
 
     pos2 = ax2.imshow(negativeMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
@@ -206,6 +210,10 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     ax2.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
     displayExtraInfo(ax2, filePath)
 
+    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    fileImgName = dataName + '_' + actualDataTime + 'B' + '.pdf'
+    fig2.savefig(fileImgName,bbox_inches='tight', dpi=600)
+
     pos3 = ax3.imshow(SumMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig3.colorbar(pos3, ax=ax3, shrink = 0.8)
     ax3.set_title('Total Events Matrix')
@@ -214,8 +222,11 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     xyMax = np.where(SumMatrix >= MaxSumMatrix)
     ax3.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
     displayExtraInfo(ax3, filePath)
-
-
+    
+    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    fileImgName = dataName + '_' + actualDataTime + 'C' + '.pdf'
+    fig3.savefig(fileImgName,bbox_inches='tight', dpi=600)
+    
     pos4 = ax4.imshow(AverageMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
     fig4.colorbar(pos4, ax=ax4, shrink = 0.8)
     ax4.set_title('Average Events Matrix')
@@ -227,6 +238,10 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     ax4.annotate('Min: ('+ str(xyMin[1])+',' + str(xyMin[0])+')', xy=(xyMin[1], xyMin[0]), xytext=(xyMin[1]-75, xyMin[0]-75), arrowprops=dict(facecolor='black', shrink=0.025))
     displayExtraInfo(ax4, filePath)
 
+    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    fileImgName = dataName + '_' + actualDataTime + 'D' + '.pdf'
+    fig4.savefig(fileImgName,bbox_inches='tight', dpi=600)
+    
     plt.show()
     
 
