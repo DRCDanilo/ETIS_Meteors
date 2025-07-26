@@ -198,7 +198,7 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
 
     dataName = filePath[55:-4]
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_' + actualDataTime + 'A' + '.pdf'
+    fileImgName = dataName + '_PosMatrix_' + actualDataTime + '.pdf'
     fig1.savefig(fileImgName,bbox_inches='tight', dpi=600)
 
     pos2 = ax2.imshow(negativeMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
@@ -211,7 +211,7 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     displayExtraInfo(ax2, filePath)
 
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_' + actualDataTime + 'B' + '.pdf'
+    fileImgName = dataName + '_NegMatrix_' + actualDataTime + '.pdf'
     fig2.savefig(fileImgName,bbox_inches='tight', dpi=600)
 
     pos3 = ax3.imshow(SumMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
@@ -224,7 +224,7 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     displayExtraInfo(ax3, filePath)
     
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_' + actualDataTime + 'C' + '.pdf'
+    fileImgName = dataName + '_TotMatrix_' + actualDataTime + '.pdf'
     fig3.savefig(fileImgName,bbox_inches='tight', dpi=600)
     
     pos4 = ax4.imshow(AverageMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
@@ -239,7 +239,7 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     displayExtraInfo(ax4, filePath)
 
     actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_' + actualDataTime + 'D' + '.pdf'
+    fileImgName = dataName + '_AvgMatrix_' + actualDataTime + '.pdf'
     fig4.savefig(fileImgName,bbox_inches='tight', dpi=600)
     
     plt.show()

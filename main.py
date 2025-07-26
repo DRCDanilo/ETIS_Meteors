@@ -39,10 +39,10 @@ for i in range(len(events)):
 
     #pixelsEvents = makePixelsHistogram(events[i,0], events[i,1], events[i,2], pixelsEvents)
 
-    if (events[i,2] == 1):
+    if (events[i,2] == 1): #if polarity = 1
         counting_events_per_pixel(PositiveEventsMatrix, events[i,0], events[i,1])
 
-    elif (events[i,2] == 0):
+    elif (events[i,2] == 0): #if polarity = 0
         counting_events_per_pixel(NegativeEventsMatrix, events[i,0], events[i,1])
 
 
