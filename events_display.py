@@ -143,6 +143,7 @@ def displayBihistogram(array, binWidth, filePath):
 def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
 #Function to display the 4 matrices of the data:
 #Positive events matrix, negative events matrix, total events matrix, average events Matrix
+#The function also saves the 4 images automatically in pdf format.
 #Parameter positiveMatrix : The positive events matrix.
 #Parameter negativeMatrix : The negative events matrix.
 #Parameter filePath : The data file path.
@@ -824,7 +825,7 @@ def onesMask(array, matrix):
     return matrix
 
 
-def getParameters(array):
+def get_parameters(array):
 #Function to calculate the average, the median, the minimum and the maximum of an array of pixels.
 #Parameter array : The array with the pixels to calculate the parameters for.
 
