@@ -34,13 +34,13 @@ from PIL import Image
 #################################################################################################################################################
 #Functions
 #################################################################################################################################################
-def counting_events_per_pixel (matrix, xCoord, yCoord):
+def counting_events_per_pixel (matrix, x_coord, y_coord):
 #Function to fill a matrix with the number of changes per pixel.
 #Parameter matrix : matrix to fill.
 #Parameter xCoord : coordinate x pixel.
 #Parameter yCoord : coordinate y pixel.
 
-    matrix[yCoord, xCoord] += 1
+    matrix[y_coord, x_coord] += 1
 
 
 
