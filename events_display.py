@@ -813,10 +813,10 @@ def nan_mask(stars_array, input_matrix):
     for r in range( len( stars_array ) ):
         star_nan( stars_array[r], input_matrix )
 
-    rectangle_nan(73, 93, 456, 480, input_matrix) # NaN square for the meteor of first file meteor.csv
-    #rectangle_nan(223, 231, 306, 327, input_matrix) # NaN square for the meteor of second file meteor_003019_long.csv
+    #rectangle_nan(73, 93, 456, 480, input_matrix) # NaN square for the meteor of first file meteor.csv
+    rectangle_nan(223, 231, 306, 327, input_matrix) # NaN square for the meteor of second file meteor_003019_long.csv
 
-    return matrix
+    return input_matrix
 
 def onesMask(array, matrix):
 #Function to create a matrix with ones terms calling the others functions.
@@ -908,4 +908,41 @@ def meteorCoordinatesList(x1, x2, y1, y2):
     outputArray = np.delete(outputArray, 0, 0)  # Delete the first row because it is [0,0].
     return outputArray
 
+def histogram_num_events(array, bin_width, file_path):
+#Function to display an histogram of the total events of an input array.
+#This function was made for the analysis of the real sky's pixels.
+#By default, just the y axis is in log scale. It is necessary to uncomment some lines to have the x axis in log scale too.
+#The function also saves the image automatically in pdf format.
+#Parameter array : The array with the pixels to make the histogram of.
+#Parameter bin_width : The parameter to define the bin width of the histogram in microseconds.
+#Parameter file_path : Variable with the location of the data file.
 
+    #Variable to know the max number of events in the array (events of crazy pixel)
+    max_event_array = max(array)
+    #Build an array with the bins for the histogram
+    xbins = np.arange(0, (max_event_array + bin_width), bin_width) #Bins in linear (normal) scale
+    #Build an array with the bins for the histogram in log scale
+    bins_log = np.logspace(np.log10(array.min()), np.log10(array.max()), 40) #Modify the number 70 to change the scale
+    
+    #Create the figure
+    fig, ax = plt.subplots()
+    ax.hist(array[:], bins=xbins, edgecolor = 'orange') #x axis in log scale -> bins = bins_log
+    plt.yscale('log') #y axis in log scale
+    #plt.xscale('log') #Uncomment to have x axis in log scale
+    #plot the xdata locations on the x axis:
+    ax.plot(array[:], 0*array[:], 'd')
+
+    plt.title("Histogram of Total Events : Real Sky")
+    plt.grid(visible = True, color = 'r')
+    ax.set_xlabel('Events')
+    ax.set_ylabel('Number of pixels')
+    displayExtraInfo(ax, file_path)
+    ax.annotate('Events Bin Width: ' + str(bin_width) + ' events', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
+
+    #To save the image
+    dataName = file_path[55:-4]
+    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    fileImgName = dataName + '_HistoRealSky_' + actualDataTime + '.pdf'
+    fig.savefig(fileImgName,bbox_inches='tight', dpi=600)
+    
+    plt.show()

@@ -7,7 +7,7 @@ from events_display import * #To import all the functions developped in this int
 #Path file in Windows
 file_path = 'D:\Documentos pc Acer\Descargas pc Acer\ETIS\dataFiles\meteor.csv' # Modify according to the file path
 #Path file in Ubuntu
-#file_path = ('/users/danidelr86/Téléchargements/ETIS_stars/data_files/meteor_003019_long.csv') # Modify according to the file path
+#file_path = ('/users/Downloads/meteor_003019_long.csv') # Modify according to the file path
 
 with open(file_path, 'r') as csv_file:#Read the file
     reader = csv.reader(csv_file)
@@ -19,7 +19,7 @@ num_pixels_x = max(events[ :, 0])
 num_pixels_y = max(events[ :, 1])
 
 #Total time of the data
-timeData = events[-1, -1]
+time_data = events[-1, -1]
 
 #Create the matrices for events
 positive_events_matrix = np.zeros((num_pixels_y + 1, num_pixels_x + 1))
@@ -34,4 +34,4 @@ for i in range(len(events)):
     elif (events[i,2] == 0): #if polarity = 0
         counting_events_per_pixel(negative_events_matrix, events[i,0], events[i,1])
 
-display_4_matrices(PositiveEventsMatrix, NegativeEventsMatrix, file_path)
+display_4_matrices(positive_events_matrix, negative_events_matrix, file_path)
