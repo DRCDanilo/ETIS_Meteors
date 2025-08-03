@@ -818,7 +818,7 @@ def nan_mask(stars_array, input_matrix):
 
     return input_matrix
 
-def onesMask(array, matrix):
+def one_mask(array, matrix):
 #Function to create a matrix with ones terms calling the others functions.
 
     for r in range(len(array)):
