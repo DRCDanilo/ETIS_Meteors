@@ -401,19 +401,13 @@ def displayPixels(array, matrix, filePath):
 
     plt.show()
 
-
-def fillMatrix (matrix, xCoord, yCoord, value):#m: matrix to fill. xCoord: coordinate x pixel. yCoord: coordinate y pixel, value: value to put
+def fill_matrix (matrix, x_coord, y_coord, value):
 #Function to put a value in a specific pixel in a matrix.
 #Parameter matrix : matrix to fill.
-#Parameter xCoord : coordinate x pixel.
-#Parameter yCoord : coordinate y pixel.
+#Parameter x_coord : coordinate x pixel.
+#Parameter y_coord : coordinate y pixel.
 
-    matrix[yCoord, xCoord] = value
-
-
-
-
-
+    matrix[y_coord, x_coord] = value
 
 def filterArray(array, value, eventType, condition):
 #Function to filter an array.
@@ -813,8 +807,8 @@ def nan_mask(stars_array, input_matrix):
     for r in range( len( stars_array ) ):
         star_nan( stars_array[r], input_matrix )
 
-    #rectangle_nan(73, 93, 456, 480, input_matrix) # NaN square for the meteor of first file meteor.csv
-    rectangle_nan(223, 231, 306, 327, input_matrix) # NaN square for the meteor of second file meteor_003019_long.csv
+    rectangle_nan(73, 93, 456, 480, input_matrix) # NaN square for the meteor of first file meteor.csv
+    #rectangle_nan(223, 231, 306, 327, input_matrix) # NaN square for the meteor of second file meteor_003019_long.csv
 
     return input_matrix
 
