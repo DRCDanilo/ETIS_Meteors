@@ -758,17 +758,17 @@ def addEventsByTime(array, totalTimeData, unitOfTime):
 def star_nan(array, matrix):
 #Function to fill with NaN a star pixel and its 8 neighbors pixels.
 #Parameter array : The star to fill with NaN, in form of an array with the coordinates in the form = [x,y,...].
-#Parameter matrix : The matrix to form the mask in.
+#Parameter matrix : The matrix to fill with the NaN terms in.
 
-    fillMatrix(matrix, array[0], array[1], np.nan) #Star pixel
-    fillMatrix(matrix, ( array[0] + 1 ), array[1], np.nan)  #Right neighbor pixel
-    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] + 1 ), np.nan)  #Right-down neighbor pixel
-    fillMatrix(matrix, array[0], ( array[1] + 1 ), np.nan)  #Down neighbor pixel
-    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] + 1 ), np.nan)  # Left-down neighbor pixel
-    fillMatrix(matrix, ( array[0] - 1 ), array[1], np.nan)  # Left neighbor pixel
-    fillMatrix(matrix, ( array[0] - 1 ), ( array[1] - 1 ), np.nan)  # Left-up neighbor pixel
-    fillMatrix(matrix, array[0], ( array[1] - 1 ), np.nan)  # Up neighbor pixel
-    fillMatrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), np.nan)  # Right-up neighbor pixel
+    fill_matrix(matrix, array[0], array[1], np.nan) #Star pixel
+    fill_matrix(matrix, ( array[0] + 1 ), array[1], np.nan)  #Right neighbor pixel
+    fill_matrix(matrix, ( array[0] + 1 ), ( array[1] + 1 ), np.nan)  #Right-down neighbor pixel
+    fill_matrix(matrix, array[0], ( array[1] + 1 ), np.nan)  #Down neighbor pixel
+    fill_matrix(matrix, ( array[0] - 1 ), ( array[1] + 1 ), np.nan)  # Left-down neighbor pixel
+    fill_matrix(matrix, ( array[0] - 1 ), array[1], np.nan)  # Left neighbor pixel
+    fill_matrix(matrix, ( array[0] - 1 ), ( array[1] - 1 ), np.nan)  # Left-up neighbor pixel
+    fill_matrix(matrix, array[0], ( array[1] - 1 ), np.nan)  # Up neighbor pixel
+    fill_matrix(matrix, ( array[0] + 1 ), ( array[1] - 1 ), np.nan)  # Right-up neighbor pixel
 
 
 def rectangle_nan(x1, x2, y1, y2, matrix):
