@@ -21,25 +21,25 @@ num_pixels_y = max(events[ :, 1])
 #Total time of the data
 time_data = events[-1, -1]
 
-#Array to count the events per pixel. nx5 = [xCoord, yCoord, positiveEvents, negativeEvents, totalEvents]
-pixelsEvents = np.zeros([1, 5], dtype = int)
+#Array to count the events per pixel. nx5 = [x coord, y coord, positive events, negative events, total events]
+pixel_events = np.zeros([1, 5], dtype = int)
 
-#Loop through events (data) array to fill the event matrix and arrays
-for i in range(len(events)):
+#Loop through data array to create the pixel_events variable
+for i in range( len( events ) ):
 
-    pixelsEvents = count_pixel_events(events[i,0], events[i,1], events[i,2], pixelsEvents)
+    pixel_events = count_pixel_events(events[i,0], events[i,1], events[i,2], pixel_events)
 
 
-#Delete the first row of pixelsEvents because is 0,0,0,0,0
-pixelsEvents = np.delete(pixelsEvents, 0, 0)
+#Delete the first row of pixel_events because is 0,0,0,0,0
+pixel_events = np.delete(pixel_events, 0, 0)
 
-#Add a column for the number of events per time unit (i.e. events x second)
-pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = float ) ) )  #Add the pixel to the array
+#Add a column to pixel_events for the number of events per time unit (i.e. events/second)
+pixel_events = np.hstack( ( pixel_events , np.zeros([len( pixel_events ), 1], dtype = float ) ) )
 
 #Filtering to just have the 6 stars
-unitOfTime = 1000000 # Parameter to define the unit of time of the events
-pixelsEvents = addEventsByTime(pixelsEvents, time_data, unitOfTime) #Add the number of events per unit of time to every pixel
-remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8, 5) #Filtering by direct neighbors
+unit_of_time = 1000000 # Parameter to have the events/second. 1000000 us = 1 s
+pixel_events = add_events_per_time(pixel_events, time_data, unit_of_time) #Add the number of events per unit of time to every pixel
+remainPixels = directNeighbors(pixel_events, 0.6, 3, 8, 5) #Filtering by direct neighbors
 remainPixels = filterArray(remainPixels, 20, 4, 1) #Filtering by number of events per unit of time
 remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to the same star
 remainPixels = remainPixels.astype(int)

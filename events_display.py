@@ -732,7 +732,7 @@ def continuousStar(array, interval, timeStop, level):
 
 
 
-def eventsByTime(numTotalEvents, totalTimeData, unitOfTime):
+def calculate_events_per_time(numTotalEvents, totalTimeData, unitOfTime):
 #Function to calculate the number of events per second or per a determined amount of time, of one pixel.
 #Parameter numTotalEvents : The total number of events of the pixel.
 #Parameter totalTimeData : The total duration time of the data.
@@ -742,15 +742,15 @@ def eventsByTime(numTotalEvents, totalTimeData, unitOfTime):
     return eventsPerTime
 
 
-def addEventsByTime(array, totalTimeData, unitOfTime):
-#Function to add the number of events per second or per a determined amount of time, to an array of pixels.
-#Parameter array : The array with pixels to add their number of events per amount of time.
-#Parameter totalTimeData : The total duration time of the data.
-#Parameter unitOfTime : The time unit for the reference.
+def add_events_per_time(array, total_time_data, unit_of_time):
+#Function to add the number of events per second (or per miute e.g.), to an array of pixels.
+#Parameter array : An array with pixels to add their number of events per amount of time.
+#Parameter total_time_data : The total time duration of the data.
+#Parameter unit_of_time : The time unit reference in microseconds (1000000 for 1 second e.g.) for the events.
 
-    for i in range( len( array ) ):
-        numToAdd = eventsByTime( array[i, 4], totalTimeData, unitOfTime)
-        array[i, 5] = numToAdd
+    for i in range( len( array ) ): #Loop through input array
+        number_to_add = calculate_events_per_time( array[i, 4], total_time_data, unit_of_time) #Calculate the events/time unit
+        array[i, 5] = number_to_add #Add the value of events/time unit to the pixel
     return array
 
 
