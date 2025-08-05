@@ -11,7 +11,7 @@ file_path = 'D:\Documentos pc Acer\Descargas pc Acer\ETIS\dataFiles\meteor.csv' 
 
 with open(file_path, 'r') as csv_file:#Read the file
     reader = csv.reader(csv_file)
-    events = np.array(list(reader), dtype=int)#Originally, dtype=float, I changed to int because there was an error trying
+    events = np.array(list(reader), dtype=int)
     events[:, -1] -= min(events[:, -1])  # Start all sequences at 0.
 
 #Size of the image/matrix
@@ -21,17 +21,27 @@ num_pixels_y = max(events[ :, 1])
 #Total time of the data
 time_data = events[-1, -1]
 
-#Create the matrices for events
-positive_events_matrix = np.zeros((num_pixels_y + 1, num_pixels_x + 1))
-negative_events_matrix = np.zeros((num_pixels_y + 1, num_pixels_x + 1))
+#Array to count the events per pixel. nx5 = [xCoord, yCoord, positiveEvents, negativeEvents, totalEvents]
+pixelsEvents = np.zeros([1, 5], dtype = int)
 
 #Loop through events (data) array to fill the event matrix and arrays
 for i in range(len(events)):
 
-    if (events[i,2] == 1): #if polarity = 1
-        counting_events_per_pixel(positive_events_matrix, events[i,0], events[i,1])
+    pixelsEvents = count_pixel_events(events[i,0], events[i,1], events[i,2], pixelsEvents)
 
-    elif (events[i,2] == 0): #if polarity = 0
-        counting_events_per_pixel(negative_events_matrix, events[i,0], events[i,1])
 
-display_4_matrices(positive_events_matrix, negative_events_matrix, file_path)
+#Delete the first row of pixelsEvents because is 0,0,0,0,0
+pixelsEvents = np.delete(pixelsEvents, 0, 0)
+
+#Add a column for the number of events per time unit (i.e. events x second)
+pixelsEvents = np.hstack( ( pixelsEvents , np.zeros( [len(pixelsEvents), 1], dtype = float ) ) )  #Add the pixel to the array
+
+#Filtering to just have the 6 stars
+unitOfTime = 1000000 # Parameter to define the unit of time of the events
+pixelsEvents = addEventsByTime(pixelsEvents, time_data, unitOfTime) #Add the number of events per unit of time to every pixel
+remainPixels = directNeighbors(pixelsEvents, 0.6, 3, 8, 5) #Filtering by direct neighbors
+remainPixels = filterArray(remainPixels, 20, 4, 1) #Filtering by number of events per unit of time
+remainPixels = isStar(remainPixels) #Identify is one or more pixels belong to the same star
+remainPixels = remainPixels.astype(int)
+print('There are',len(remainPixels), 'stars:')
+print(remainPixels)

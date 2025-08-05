@@ -277,42 +277,41 @@ def displayHistoNumEvents(arrayEvents):
     plt.show()
 
 
-def makePixelsHistogram(xCoord, yCoord, polarity, array):
-#Function to make an array with all the pixels in the input data file, with the total number of events (positives and
-#negatives. The output is an array with all the n pixels in the data input, and their total events number for all the
-#file duration.
-#Parameter xCoord : The coordinate x of the pixel.
-#Parameter yCoord : The coordinate y of the pixel.
+def count_pixel_events(x_coord, y_coord, polarity, array):
+#Function to make an array with all the pixels in the input data file, with their total number of events.
+#The goal is to have an array that answer the question "How many events does each pixel in the input file have?"
+#Parameter x_coord : The x coordinate of the pixel.
+#Parameter y_coord : The y coordinate of the pixel.
 #Parameter polarity : The polarity of the event.
 #Parameter array : The array to store all the pixels and their events.
 
-    if( xCoord in array[:,0] ): #Look for the coordinate x of the pixel in the array
-        if ( yCoord in array[:,1] ): #Look for the coordinate y of the pixel in the array
+    if( x_coord in array[:,0] ): #Look for the x coordinate of the pixel in the array
+        if ( y_coord in array[:,1] ): #Look for the y coordinate of the pixel in the array
 
-            index = np.where( (array[:,0] == xCoord) & (array[:,1] == yCoord) ) #Get the position on the array
+            index = np.where( (array[:,0] == x_coord) & (array[:,1] == y_coord) ) #If the pixel is in the array, get the position on the array
             if( len( array[index] ) == 1 ): #Check the position on the array
                 if(polarity == 1):
-                    array[index,2] += 1
-                    array[index,4] += 1
+                    array[index,2] += 1 #Add an event to the positive events column of the pixel in the array
+                    array[index,4] += 1 #Add an event to the total events column of the pixel in the array
                     
                 if(polarity == 0):
-                    array[index,3] += 1
-                    array[index,4] += 1
-            else:
+                    array[index,3] += 1 #Add an event to the negative events column of the pixel in the array
+                    array[index,4] += 1 #Add an event to the total events column of the pixel in the array
+            else: #If there is a pixel with the x coordinate, and another pixel with the y coordinate, add the pixel to the array
                 if(polarity == 1):
-                    array = np.vstack((array, np.array([xCoord, yCoord, 1, 0, 1]))) #Add the pixel to the array
+                    array = np.vstack((array, np.array([x_coord, y_coord, 1, 0, 1]))) #Add the pixel to the array
                 if(polarity == 0):
-                    array = np.vstack((array, np.array([xCoord, yCoord, 0, 1, 1]))) #Add the pixel to the array
-        else:
+                    array = np.vstack((array, np.array([x_coord, y_coord, 0, 1, 1]))) #Add the pixel to the array
+        else: #If there is not a pixel with the y coordinate, add the pixel to the array
             if(polarity == 1):
-                array = np.vstack((array, np.array([xCoord, yCoord, 1, 0, 1]))) #Add the pixel to the array
+                array = np.vstack((array, np.array([x_coord, y_coord, 1, 0, 1]))) #Add the pixel to the array
             if(polarity == 0):
-                array = np.vstack((array, np.array([xCoord, yCoord, 0, 1, 1]))) #Add the pixel to the array
-    else:
+                array = np.vstack((array, np.array([x_coord, y_coord, 0, 1, 1]))) #Add the pixel to the array
+    else: #If the pixel is not in the array, add it to the array
         if(polarity == 1):
-            array = np.vstack((array, np.array([xCoord, yCoord, 1, 0, 1]))) #Add the pixel to the array
+            array = np.vstack((array, np.array([x_coord, y_coord, 1, 0, 1]))) #Add the pixel to the array
         if(polarity == 0):
-            array = np.vstack((array, np.array([xCoord, yCoord, 0, 1, 1]))) #Add the pixel to the array
+            array = np.vstack((array, np.array([x_coord, y_coord, 0, 1, 1]))) #Add the pixel to the array
 
     return array
 
