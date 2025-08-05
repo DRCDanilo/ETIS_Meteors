@@ -781,7 +781,7 @@ def rectangle_nan(x1, x2, y1, y2, matrix):
 
     for j in range(y2-y1):
         for i in range(x2-x1):
-            fillMatrix(matrix, i+x1, j+y1, np.nan)
+            fill_matrix(matrix, i+x1, j+y1, np.nan)
 
 
 def neighborsOnes(array, matrix):
@@ -812,13 +812,15 @@ def nan_mask(stars_array, input_matrix):
 
     return input_matrix
 
-def one_mask(array, matrix):
-#Function to create a matrix with ones terms calling the others functions.
+def one_mask(stars_array, input_matrix):
+#Function to create a matrix with 1 terms in the neighbor star pixels, using another function.
+#Parameter stars_array : Array with all the stars. Each element in the array should have the form [x,y,.,.,] where x and y are the coordinates of the star.
+#Parameter input_matrix : The input matrix where the mask will be.
 
-    for r in range(len(array)):
-        neighborsOnes(array[r], matrix)
+    for r in range( len( stars_array ) ):
+        neighbor_one(stars_array[r], input_matrix)
 
-    return matrix
+    return input_matrix
 
 
 def get_parameters(array):

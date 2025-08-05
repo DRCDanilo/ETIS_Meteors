@@ -5,7 +5,7 @@ from events_display import * #To import all the functions developped in this int
 
 #Import the data file
 #Path file in Windows
-file_path = 'D:\Documentos pc Acer\Descargas pc Acer\ETIS\dataFiles\meteor_003019_long.csv' # Modify according to the file path
+file_path = 'D:\Documentos pc Acer\Descargas pc Acer\ETIS\dataFiles\meteor.csv' # Modify according to the file path
 #Path file in Ubuntu
 #file_path = ('/users/Downloads/meteor_003019_long.csv') # Modify according to the file path
 
