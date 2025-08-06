@@ -600,76 +600,71 @@ def direct_neighbors(array, num_min_events, num_min_neighbors, neighbors, num_co
 
 
 
-def isStar(array):
+def is_star(array):
 #Function to identify if two or more pixels who are direct neighbors, belong to a single star.
-#The function search in every pixel in the input array, looking for directs neighbors (up, down, left or right)
-#and identify the pixel with the highest number of events as the star
+#The function search in every pixel in the input array, looking for directs and indirect neighbors and identify the pixel with the highest number of events as the star
 #Parameter array : The array wih the pixels to filter
 
-    outputArray = np.zeros([1, array.shape[1]], dtype=int)
+    output_array = np.zeros([1, array.shape[1]], dtype=int)
+    
     for i in range(len(array[:, 0])):
-        star = True
+        
+        star = True #Variable to identify the star pixel. It is assumed that the i pixel has the highest number of events, so that pixel is the star
+        
         # Neighbor above
-        a = np.where(((array[:, 0]) == (array[i, 0])) & (
-                    (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates above
-        if (len(array[a]) == 1):  # There is a neighbor above
-            if (array[a, 4] > array[i, 4]):  # The neighbor above has more events
+        pixel = np.where(((array[:, 0]) == (array[i, 0])) & ((array[:, 1]) == ((array[i, 1]) - 1)))  #Find a neighbor pixel in the coordinates above
+        if (len(array[pixel]) == 1):  # There is a neighbor above
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor above has more events
                 star = False  # The i pixel is not the star
 
         # Neighbor right
-        a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & (
-                    (array[:, 1]) == (array[i, 1])))  # Find a pixel in the coordinates to the right
-        if (len(array[a]) == 1):  # There is a neighbor to the right
-            if (array[a, 4] > array[i, 4]):  # The neighbor to the right has more events
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == (array[i, 1])))  #Find a neighbor pixel in the coordinates to the right
+        if (len(array[pixel]) == 1):  # There is a neighbor to the right
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor to the right has more events
                 star = False  # The i pixel is not the star
 
         # Neighbor below
-        a = np.where(((array[:, 0]) == (array[i, 0])) & (
-                    (array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates below
-        if (len(array[a]) == 1):  # There is a neighbor below
-            if (array[a, 4] > array[i, 4]):  # The neighbor below has more events
+        pixel = np.where(((array[:, 0]) == (array[i, 0])) & ((array[:, 1]) == ((array[i, 1]) + 1)))  #Find a neighbor pixel in the coordinates below
+        if (len(array[pixel]) == 1):  # There is a neighbor below
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor below has more events
                 star = False  # The i pixel is not the star
 
         # Neighbor to the left
-        a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & (
-                    (array[:, 1]) == (array[i, 1])))  # Find a pixel in the coordinates to the left
-        if (len(array[a]) == 1):  # There is a neighbor to the left
-            if (array[a, 4] > array[i, 4]):  # The neighbor to the left has more events
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == (array[i, 1])))  #Find a neighbor pixel in the coordinates to the left
+        if (len(array[pixel]) == 1):  # There is a neighbor to the left
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor to the left has more events
                 star = False  # The i pixel is not the star
 
         # Neighbor in the upper right side
-        a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & (
-                    (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper right side
-        if (len(array[a]) == 1):  # There is a neighbor in the upper right side
-            if (array[a, 4] > array[i, 4]):  # The neighbor in the upper right side has more events
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == ((array[i, 1]) - 1))) #Find a neighbor pixel in the coordinates to the upper right side
+        if (len(array[pixel]) == 1):  # There is a neighbor in the upper right side
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor in the upper right side has more events
                 star = False  # The i pixel is not the star
 
         # Neighbor in the lower right side
-        a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & (
-                    (array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower right side
-        if (len(array[a]) == 1):  # There is a neighbor in the lower right side
-            if (array[a, 4] > array[i, 4]):  # The neighbor in the lower right side has more events
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  #Find a neighbor pixel in the coordinates to the lower right side
+        if (len(array[pixel]) == 1):  # There is a neighbor in the lower right side
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor in the lower right side has more events
                 star = False  # The i pixel is not the star
 
         # Neighbor in the lower left side
-        a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & (
-                    (array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower left side
-        if (len(array[a]) == 1):  # There is a neighbor in the lower left side
-            if (array[a, 4] > array[i, 4]):  # The neighbor in the lower left side has more events
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  #Find a neighbor pixel in the coordinates to the lower left side
+        if (len(array[pixel]) == 1):  # There is a neighbor in the lower left side
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor in the lower left side has more events
                 star = False  # The i pixel is not the star
 
         # Neighbor in the upper left side
-        a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & (
-                    (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper left side
-        if (len(array[a]) == 1):  # There is a neighbor in the upper left side
-            if (array[a, 4] > array[i, 4]):  # The neighbor in the upper left side has more events
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) - 1)))  #Find a neighbor pixel in the coordinates to the upper left side
+        if (len(array[pixel]) == 1):  # There is a neighbor in the upper left side
+            if (array[pixel, 4] > array[i, 4]):  # The neighbor in the upper left side has more events
                 star = False  # The i pixel is not the star
 
         if (star):
-            outputArray = np.vstack((outputArray, array[i]))  # Add the pixel to the output array
+            output_array = np.vstack((output_array, array[i]))  # Add the pixel to the output array
 
-    outputArray = np.delete(outputArray, 0, 0)  # Delete the first row of the array because it's 0 0 0 0 0
-    return outputArray
+    output_array = np.delete(output_array, 0, 0)  # Delete the first row of the array because it is 0,0,0,0,0
+    
+    return output_array
 
 
 
