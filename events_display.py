@@ -408,21 +408,20 @@ def fill_matrix (matrix, x_coord, y_coord, value):
 
     matrix[y_coord, x_coord] = value
 
-def filterArray(array, value, eventType, condition):
-#Function to filter an array.
+def filter_array(array, value, event_type, condition):
+#Function to filter an array by its number of events in a selected column.
 #Parameter array: Array to filter
-#Parameter value: Value use to filter
-#Parameter eventType : Choose 1 to filter positive events, 2 to filter negative events, 3 to filter total events. The
-#function filter the column number eventType+1, so if I want to filter the events in the column 6 of the array, Python
-# indexs start at 0, so the parameter eventType would be 4.
+#Parameter value: Value used to filter the events
+#Parameter event_type : Choose 1 to filter positive events, 2 to filter negative events, 3 to filter total events. The
+#function filter the column number event_type + 1, so if I the idea is to filter the events in the column 6 of the array, the parameter event_type should be 5.
 #Parameter condition: Choose 1 to filter greater than (>) value, choose 2 to filter less than (<) value
 
     if(condition == 1):
-        mask = array[:, eventType + 1 ] > value
+        mask = array[:, event_type + 1 ] > value
         return array[mask]
         
     if (condition == 2):
-        mask = array[:, eventType + 1 ] < value
+        mask = array[:, event_type + 1 ] < value
         return array[mask]
 
 

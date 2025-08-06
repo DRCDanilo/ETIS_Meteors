@@ -40,7 +40,7 @@ pixel_events = np.hstack( ( pixel_events , np.zeros([len( pixel_events ), 1], dt
 unit_of_time = 1000000 # Parameter to have the events/second. 1000000 us = 1 s
 pixel_events = add_events_per_time(pixel_events, time_data, unit_of_time) #Add the number of events per unit of time to every pixel
 remain_pixels = direct_neighbors(pixel_events, 0.26, 3, 8, 5) #Filtering by direct neighbors
-remain_pixels = filterArray(remain_pixels, 18, 4, 1) #Filtering by number of events per unit of time
+remain_pixels = filter_array(remain_pixels, 18, 4, 1) #Filtering by number of events per unit of time
 remain_pixels = isStar(remain_pixels) #Identify is one or more pixels belong to the same star
 remain_pixels = remain_pixels.astype(int)
 print('There are',len(remain_pixels), 'stars:')
