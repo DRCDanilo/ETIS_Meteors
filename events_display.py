@@ -732,14 +732,14 @@ def continuousStar(array, interval, timeStop, level):
 
 
 
-def calculate_events_per_time(numTotalEvents, totalTimeData, unitOfTime):
-#Function to calculate the number of events per second or per a determined amount of time, of one pixel.
-#Parameter numTotalEvents : The total number of events of the pixel.
-#Parameter totalTimeData : The total duration time of the data.
-#Parameter unitOfTime : The time unit for the reference in microseconds.
+def calculate_events_per_time(number_total_events, total_time_data, unit_of_time):
+#Function to calculate the number of events per unit of time, of one pixel.
+#Parameter number_total_events : The total number of events of the pixel.
+#Parameter total_time_data : The total time duration of the data.
+#Parameter unit_of_time : The time unit reference in microseconds (1000000 for 1 second e.g.) for the events.
 
-    eventsPerTime = ( unitOfTime * numTotalEvents ) / ( totalTimeData )
-    return eventsPerTime
+    events_per_time = ( unit_of_time * number_total_events ) / ( total_time_data ) #Calculation of the events/time unit
+    return events_per_time
 
 
 def add_events_per_time(array, total_time_data, unit_of_time):
