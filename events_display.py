@@ -526,81 +526,78 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
 
 
 
-def directNeighbors(array, numMinEvents, numMinNeighbors, neighbors, numColumn):
-#Function to filter pixels by direct neighbors with a x number of events.
-#The function search in every pixel in the input array, looking for at least one direct neighbor (up, down, left or right)
-#with at least the numMinEVents in any neighbor
+def direct_neighbors(array, num_min_events, num_min_neighbors, neighbors, num_column):
+#Function to filter pixels by their neighbors pixels with a num_min_events number of events
+#If the pixel has num_min_neighbors or plus neighbors, where each neighbor has at least num_min_events events, the pixel will be added to the output array
 #Parameter array : The array wih the pixels to filter
-#Parameter numMinEVents : The minimum number of events in the neighbors pixel.
-#Parameter numMinNeighbors : The minimum number of neighbors per pixel.
+#Parameter num_min_events : The minimum number of events in a neighbor pixel to be considered a valid neighbor
+#Parameter num_min_neighbors : The minimum number of valid neighbors per pixel to be considered a valid pixel
 #Parameter neighbors : The number of neighbors to look for. If neighbors=4, the function will look for neighbors above,
-#to the right, below and to the left. If neighbors=8, the function will also look for the neighbors in the diagonals.
-#Parameter numColumn : The number of column in the array to look for the events. i.e. 4=total events, 5=events x timeUnit
+#to the right, below and to the left. If neighbors=8, the function will also look for the neighbors in the diagonals
+#Parameter num_column : The number of column in the array to look for the events. e.g. 4=total events, 5=events/time unit
 
-    #outputArray = np.zeros([1, 5], dtype = int) #Output array : xCoord, yCoord, positiEVents, negatiEvents, totalEvents, events x timeUnit
-    outputArray = np.zeros([1, array.shape[1]], dtype = int) #Output array : xCoord, yCoord, positiEVents, negatiEvents, totalEvents, events x timeUnit
-    for i in range(len(array[:,0])) :
-        numNeighbors = 0
+    output_array = np.zeros([1, array.shape[1]], dtype = int) #Output array : x coord, y coord, positive events, negative events, total events, events/time unit
+    for i in range( len( array[:,0] ) ) : #Loop through the input array
+
+        num_neighbors = 0 #Variable to check the neighbors number of the pixel
 
         #Direct neighbors
         #Neighbor above
-        a = np.where(((array[:, 0]) == (array[i, 0])) & ((array[:, 1]) == ((array[i, 1]) -1 ))) #Find a pixel in the coordinates above
-        if( len(array[a]) == 1 ):#There is a neighbor above
-            if( array[a, numColumn] >= numMinEvents ):#There is more or equal numMinEvents
-                numNeighbors += 1 #Neighbor number 1
+        pixel = np.where(((array[:, 0]) == (array[i, 0])) & ((array[:, 1]) == ((array[i, 1]) -1 ))) #Find a neighbor pixel in the coordinates above
+        if( len(array[pixel]) == 1 ):#There is a neighbor above
+            if( array[pixel, num_column] >= num_min_events ):#There is more or equal num_min_events
+                num_neighbors += 1 #Neighbor number 1
 
         #Neighbor right
-        a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == (array[i, 1]))) #Find a pixel in the coordinates to the right
-        if (len(array[a]) == 1):  # There is a neighbor to the right
-            if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
-                numNeighbors += 1 # Neighbor number 2
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == (array[i, 1]))) #Find a neighbor pixel in the coordinates to the right
+        if (len(array[pixel]) == 1):  # There is a neighbor to the right
+            if (array[pixel, num_column] >= num_min_events):  # There is more or equal num_min_events
+                num_neighbors += 1 # Neighbor number 2
 
         # Neighbor below
-        a = np.where( (  (array[:, 0])  ==  (array[i, 0])  ) & (  (array[:, 1])  ==  ((array[i, 1]) + 1)  ) ) # Find a pixel in the coordinates below
-        if (len(array[a]) == 1):  # There is a neighbor below
-            if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
-                numNeighbors += 1 # Neighbor number 3
+        pixel = np.where( (  (array[:, 0])  ==  (array[i, 0])  ) & (  (array[:, 1])  ==  ((array[i, 1]) + 1)  ) ) #Find a neighbor pixel in the coordinates below
+        if (len(array[pixel]) == 1):  # There is a neighbor below
+            if (array[pixel, num_column] >= num_min_events):  # There is more or equal num_min_events
+                num_neighbors += 1 # Neighbor number 3
 
         # Neighbor to the left
-        a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == (array[i, 1])))  # Find a pixel in the coordinates below
-        if (len(array[a]) == 1):  # There is a neighbor to the left
-            if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
-                numNeighbors += 1 # Neighbor number 4
+        pixel = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == (array[i, 1])))  #Find a neighbor pixel in the coordinates below
+        if (len(array[pixel]) == 1):  # There is a neighbor to the left
+            if (array[pixel, num_column] >= num_min_events):  # There is more or equal num_min_events
+                num_neighbors += 1 # Neighbor number 4
 
         if ( neighbors == 8 ): #Indirect neighbors
 
             # Neighbor in the upper right side
-            a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ( (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper right side
-            if (len(array[a]) == 1):  # There is a neighbor in the upper right side
-                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
-                    numNeighbors += 1  # Indirect neighbor number 1
+            pixel = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ( (array[:, 1]) == ((array[i, 1]) - 1)))  # Find a neighbor pixel in the coordinates to the upper right side
+            if (len(array[pixel]) == 1):  # There is a neighbor in the upper right side
+                if (array[pixel, num_column] >= num_min_events):  # There is more or equal num_min_events
+                    num_neighbors += 1  # Indirect neighbor number 1
 
             # Neighbor in the lower right side
-            a = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower right side
-            if (len(array[a]) == 1):  # There is a neighbor to the lower right side
-                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
-                    numNeighbors += 1  # Indirect neighbor number 2
+            pixel = np.where(((array[:, 0]) == ((array[i, 0]) + 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a neighbor pixel in the coordinates to the lower right side
+            if (len(array[pixel]) == 1):  # There is a neighbor to the lower right side
+                if (array[pixel, num_column] >= num_min_events):  # There is more or equal num_min_events
+                    num_neighbors += 1  # Indirect neighbor number 2
 
             # Neighbor in the lower left side
-            a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a pixel in the coordinates to the lower left side
-            if (len(array[a]) == 1):  # There is a neighbor to the lower left side
-                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
-                    numNeighbors += 1  # Indirect neighbor number 3
+            pixel = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) + 1)))  # Find a neighbor pixel in the coordinates to the lower left side
+            if (len(array[pixel]) == 1):  # There is a neighbor to the lower left side
+                if (array[pixel, num_column] >= num_min_events):  # There is more or equal num_min_events
+                    num_neighbors += 1  # Indirect neighbor number 3
 
             # Neighbor in the upper left side
-            a = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) - 1)))  # Find a pixel in the coordinates to the upper left side
-            if (len(array[a]) == 1):  # There is a neighbor to the upper left side
-                if (array[a, numColumn] >= numMinEvents):  # There is more or equal numMinEvents
-                    numNeighbors += 1  # Indirect neighbor number 4
-
-
+            pixel = np.where(((array[:, 0]) == ((array[i, 0]) - 1)) & ((array[:, 1]) == ((array[i, 1]) - 1)))  # Find a neighbor pixel in the coordinates to the upper left side
+            if (len(array[pixel]) == 1):  # There is a neighbor to the upper left side
+                if (array[pixel, num_column] >= num_min_events):  # There is more or equal num_min_events
+                    num_neighbors += 1  # Indirect neighbor number 4
 
         #Add the pixel if it has the minimum number of neighbors
-        if( numNeighbors >= numMinNeighbors ):
-            outputArray = np.vstack((outputArray, array[i]))
+        if( num_neighbors >= num_min_neighbors ):
+            output_array = np.vstack((output_array, array[i]))
 
-    outputArray = np.delete(outputArray, 0, 0)
-    return outputArray
+    output_array = np.delete(output_array, 0, 0) #Delete the first row because it is 0,0,0,0,0
+    return output_array
 
 
 
