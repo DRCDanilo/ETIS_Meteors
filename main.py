@@ -29,7 +29,6 @@ for i in range( len( events ) ):
 
     pixel_events = count_pixel_events(events[i,0], events[i,1], events[i,2], pixel_events)
 
-
 #Delete the first row of pixel_events because is 0,0,0,0,0
 pixel_events = np.delete(pixel_events, 0, 0)
 

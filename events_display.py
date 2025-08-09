@@ -601,9 +601,10 @@ def direct_neighbors(array, num_min_events, num_min_neighbors, neighbors, num_co
 
 
 def is_star(array):
-#Function to identify if two or more pixels who are direct neighbors, belong to a single star.
-#The function search in every pixel in the input array, looking for directs and indirect neighbors and identify the pixel with the highest number of events as the star
-#Parameter array : The array wih the pixels to filter
+#Function to identify if two or more pixels which are direct neighbors belong to a single star, and select the pixel with most events, as the star pixel.
+#The function takes every pixel in the input array, looks for all its 8 neighbors and identifies the pixel with the highest number of events as the star pixel.
+#The function returns an array with all the star pixels.
+#Parameter array : The array with the pixels to filter.
 
     output_array = np.zeros([1, array.shape[1]], dtype=int)
     
@@ -742,8 +743,8 @@ def add_events_per_time(array, total_time_data, unit_of_time):
     for i in range( len( array ) ): #Loop through input array
         number_to_add = calculate_events_per_time( array[i, 4], total_time_data, unit_of_time) #Calculate the events/time unit
         array[i, 5] = number_to_add #Add the value of events/time unit to the pixel
-    return array
 
+    return array
 
 def star_nan(array, matrix):
 #Function to fill with NaN terms a star pixel and its 8 neighbors pixels.
