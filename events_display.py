@@ -59,13 +59,14 @@ def save_image (file_path):
     plt.savefig(fileImgName,bbox_inches='tight', dpi=600)
 
 
-def displayExtraInfo (axe, filePath):
-#Function to display additional information in the image
-    dataName = filePath[55:]
-    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    fileImgName = dataName + '_' + actualDataTime
-    axe.annotate('Data file: ' + dataName, xy = (0, -25), xycoords = 'axes points', fontsize = 8)
-    axe.annotate('Date: ' + actualDataTime, xy = (0, -33), xycoords = 'axes points', fontsize = 8)
+def display_extra_info (axe, file_path):
+#Function to display additional information in the bottom part of the image.
+#The input data file name, the date and time when the image was generated are displayed.
+    data_name = file_path[55:]
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    fileImgName = data_name + '_' + actual_data_time
+    axe.annotate('Data file: ' + data_name, xy = (0, -25), xycoords = 'axes points', fontsize = 8)
+    axe.annotate('Date: ' + actual_data_time, xy = (0, -33), xycoords = 'axes points', fontsize = 8)
 
 
 def displayHistogram(array, binWidth, filePath):
@@ -245,11 +246,6 @@ def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
     
     plt.show()
     
-
-
-
-
-
 def displayHistoNumEvents(arrayEvents):
 #Function to display the number of events histogram of the image.
 #Could be the positive or negative histogram.
@@ -317,14 +313,14 @@ def count_pixel_events(x_coord, y_coord, polarity, array):
 
     
 
-def displayPixels(array, matrix, filePath):
+def display_pixels(array, matrix, filePath):
 #Function to display desired pixels.
 
     #m = np.zeros((numPixelsY + 1, numPixelsX + 1))
 
 
     for i in range( len( array[:,0] ) ):
-        fillMatrix(matrix, array[i, 0], array[i, 1], array[i, 4])
+        fill_matrix(matrix, array[i, 0], array[i, 1], array[i, 4])
 
     maxValueArray = np.max(array[:, 4])
 
@@ -393,7 +389,7 @@ def displayPixels(array, matrix, filePath):
     #     ax1.annotate('Pollux', xy=(259, 314), xytext=(259 + 50, 314 + 50),
     #                  arrowprops=dict(facecolor='black', shrink=0.005))
 
-    displayExtraInfo(ax1, filePath)
+    display_extra_info(ax1, filePath)
 
 
     #saveImage()
