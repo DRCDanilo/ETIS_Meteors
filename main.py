@@ -45,4 +45,5 @@ remain_pixels = remain_pixels.astype(int)
 print('There are',len(remain_pixels), 'stars:')
 print(remain_pixels)
 m = np.ones((num_pixels_y + 1, num_pixels_x + 1))
-display_pixels(remain_pixels, m , file_path)
+image_title = 'Stars After Filtering Process'
+display_pixels(remain_pixels, m , file_path, image_title)

@@ -313,86 +313,25 @@ def count_pixel_events(x_coord, y_coord, polarity, array):
 
     
 
-def display_pixels(array, matrix, filePath):
+def display_pixels(array, matrix, file_path, image_title):
 #Function to display desired pixels.
-
-    #m = np.zeros((numPixelsY + 1, numPixelsX + 1))
-
 
     for i in range( len( array[:,0] ) ):
         fill_matrix(matrix, array[i, 0], array[i, 1], array[i, 4])
 
-    maxValueArray = np.max(array[:, 4])
-
-
-    # Capella = False
-    # Jupiter = False
-    # Betelgeuse = False
-    # Procyon = False
-    # Mars = False
-    # Pollux = False
-    # s = np.where( (array[:, 0] == 285) & (array[:, 1] == 60) )
-    # if( len(array[s]) == 1 ):
-    #     Capella = True
-    #
-    #
-    # s = np.where( (array[:, 0] == 530) & (array[:, 1] == 91) )
-    # if( len(array[s]) == 1 ):
-    #     Jupiter = True
-    #
-    #
-    # s = np.where( (array[:, 0] == 508) & (array[:, 1] == 266) )
-    # if( len(array[s]) == 1 ):
-    #     Betelgeuse = True
-    #
-    # s = np.where( (array[:, 0] == 392) & (array[:, 1] == 439) )
-    # if( len(array[s]) == 1 ):
-    #     Procyon = True
-    #
-    # s = np.where( (array[:, 0] == 221) & (array[:, 1] == 412) )
-    # if( len(array[s]) == 1 ):
-    #     Mars = True
-    #
-    # s = np.where((array[:, 0] == 259) & (array[:, 1] == 314))
-    # if (len(array[s]) == 1):
-    #     Pollux = True
-
+    max_value_matrix = np.max(array[:, 4])
 
     fig1, ax1 = plt.subplots()
    
-    pos1 = ax1.imshow(matrix, cmap = 'cividis_r', interpolation = 'none', vmax = maxValueArray)
-    fig1.colorbar(pos1, ax = ax1, shrink = 0.8)#Colorbar
-    ax1.set_title('Pixels After Filtering Process')
+    pos1 = ax1.imshow(matrix, cmap = 'cividis_r', interpolation = 'none', vmax = max_value_matrix)
+    fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
+    ax1.set_title(image_title)
     ax1.set_xlabel('pixels')
     ax1.set_ylabel('pixels')
 
-    annotatePixels(array, ax1)
+    annotate_pixels(array, ax1)
     
-
-    # if( Capella ):
-    #     ax1.annotate('Capella', xy=(285, 60), xytext=(285+50, 60+50), arrowprops=dict(facecolor='black', shrink=0.005))
-    #
-    # if ( Jupiter ):
-    #     ax1.annotate('Jupiter', xy=(530, 91), xytext=(530+50, 91+50), arrowprops=dict(facecolor='black', shrink=0.005))
-    #
-    # if( Betelgeuse ):
-    #     ax1.annotate('Betelgeuse', xy=(508, 266), xytext=(508+50, 266+50), arrowprops=dict(facecolor='black', shrink=0.0005))
-    #
-    #
-    # if( Procyon ):
-    #     ax1.annotate('Procyon', xy=(392, 439), xytext=(392+50, 439+50), arrowprops=dict(facecolor='black', shrink=0.005))
-    #
-    # if( Mars ):
-    #     ax1.annotate('Mars', xy=(221, 412), xytext=(221+50, 412+50), arrowprops=dict(facecolor='black', shrink=0.005))
-    #
-    # if (Pollux):
-    #     ax1.annotate('Pollux', xy=(259, 314), xytext=(259 + 50, 314 + 50),
-    #                  arrowprops=dict(facecolor='black', shrink=0.005))
-
-    display_extra_info(ax1, filePath)
-
-
-    #saveImage()
+    display_extra_info(ax1, file_path)
 
     plt.show()
 
@@ -665,15 +604,12 @@ def is_star(array):
 
 
 
-def annotatePixels(array, ax):
-#Function to annotate - make more visible some pixels
-#The function annotates all the pixels inside the array
+def annotate_pixels(array, ax):
+#Function to make more visible the pixels of the input array, in a matrix
+#The function draws an arrow next to all the pixels in the input array
 
     for i in range( len( array[:,0] ) ) :
         ax.annotate(str(i), xy=(array[i,0]+3, array[i,1]), xytext=(array[i,0]+12, array[i,1]), arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=6))
-
-
-
 
 def continuity(array, e):
 #Function to analyze along the time an array and determine if here is continuity of events.
