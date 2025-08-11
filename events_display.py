@@ -58,10 +58,10 @@ def save_image (file_path):
     #plt.savefig(full_path,bbox_inches='tight', pad_inches=0)
     plt.savefig(fileImgName,bbox_inches='tight', dpi=600)
 
-
 def display_extra_info (axe, file_path):
-#Function to display additional information in the bottom part of the image.
-#The input data file name, the date and time when the image was generated are displayed.
+#Function to display additional information in the bottom part of the image
+#The input data file name, the date and time when the image was generated are displayed
+    
     data_name = file_path[55:]
     actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     fileImgName = data_name + '_' + actual_data_time
@@ -141,108 +141,108 @@ def displayBihistogram(array, binWidth, filePath):
     plt.show()
 
 
-def display_4_matrices(positiveMatrix, negativeMatrix, filePath):
+def display_4_matrices(positive_matrix, negative_matrix, file_path):
 #Function to display the 4 matrices of the data:
 #Positive events matrix, negative events matrix, total events matrix, average events Matrix
-#The function also saves the 4 images automatically in pdf format.
-#Parameter positiveMatrix : The positive events matrix.
-#Parameter negativeMatrix : The negative events matrix.
-#Parameter filePath : The data file path.
+#The function also saves the 4 images automatically in pdf format
+#Parameter positive_matrix : The positive events matrix
+#Parameter negative_matrix : The negative events matrix
+#Parameter file_path : The data file path
     
     #Total events matrix
-    SumMatrix = positiveMatrix + negativeMatrix
+    total_matrix = positive_matrix + negative_matrix
     #Average events matrix
-    AverageMatrix = positiveMatrix - negativeMatrix
+    average_matrix = positive_matrix - negative_matrix
+
+    #Max value of the positive matrix
+    max_positive_matrix = np.max(positive_matrix)
+    print('The maximum number of events in the positive matrix is: ', np.max(positive_matrix))
+    print('The minimum number of events in the positive matrix is: ', np.min(positive_matrix, where = positive_matrix > 0, initial = np.inf))
+
+    #Max value of the negative matrix
+    max_negative_matrix = np.max(negative_matrix)
+    print('The maximum number of events in the negative matrix is: ', np.max(negative_matrix))
+    print('The minimum number of events in the negative matrix is: ', np.min(negative_matrix, where = negative_matrix > 0, initial = np.inf))
+
+    #Max value of the total matrix
+    max_total_matrix = np.max(total_matrix)
+    print('The maximum number of events in the total matrix is: ', np.max(total_matrix))
+    print('The minimum number of events in the total matrix is: ', np.min(total_matrix, where = total_matrix > 0, initial = np.inf))
+
+    #Max value of the average matrix
+    max_average_matrix = np.max(average_matrix)
+    #Min value of the average matrix
+    min_average_matrix = np.min(average_matrix)
+    print('The maximum number of events in the average matrix is: ', np.max(average_matrix))
+    print('The minimum number of events in the average matrix is: ', np.min(average_matrix))
+
+    #Maximum value in the color scale next to the images
+    scale_maximum_value = 20
 
     #Display images
-    #Display positive events matrix
-    #Variable MaxPosMatrix : Max value of the matrix
-    MaxPosMatrix = np.max(positiveMatrix)
-    print('The maximun number of events in the positive matrix is: ', np.max(positiveMatrix))
-    print('The minimun number of events in the positive matrix is: ', np.min(positiveMatrix, where = positiveMatrix > 0, initial = np.inf))
-
-    #Display negative events matrix
-    #Variable MaxNegMatrix : Max value of the matrix
-    MaxNegMatrix = np.max(negativeMatrix)
-    print('The maximun number of events in the negative matrix is: ', np.max(negativeMatrix))
-    print('The minimun number of events in the negative matrix is: ', np.min(negativeMatrix, where = negativeMatrix > 0, initial = np.inf))
-
-    #Display total events matrix
-    #Variable MaxSumMatrix : Max value of the matrix
-    MaxSumMatrix = np.max(SumMatrix)
-    print('The maximun number of events in the sum matrix is: ', np.max(SumMatrix))
-    print('The minimun number of events in the sum matrix is: ', np.min(SumMatrix, where = SumMatrix > 0, initial = np.inf))
-
-    #Display average events matrix
-    #Variable MaxAvgMatrix : Max value of the matrix
-    MaxAvgMatrix = np.max(AverageMatrix)
-    #Variable MinAvgMatrix : Min value of the matrix
-    MinAvgMatrix = np.min(AverageMatrix)
-    print('The maximun number of events in the average matrix is: ', np.max(AverageMatrix))
-    print('The minimun number of events in the average matrix is: ', np.min(AverageMatrix))
-
-    #Variable vMaxScale : Used as max value in the color scale next to the images
-    vMaxScale = 20
-
     fig1, ax1 = plt.subplots()
     fig2, ax2 = plt.subplots()
     fig3, ax3 = plt.subplots()
     fig4, ax4 = plt.subplots()
 
-    pos1 = ax1.imshow(positiveMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    #Display positive events matrix
+    pos1 = ax1.imshow(positive_matrix, cmap = 'cividis_r', interpolation = 'none', vmax = scale_maximum_value)
     fig1.colorbar(pos1, ax = ax1, shrink = 0.8)
     ax1.set_title('Positve Events Matrix')
     ax1.set_xlabel('pixels')
     ax1.set_ylabel('pixels')
-    xyMax = np.where(positiveMatrix >= MaxPosMatrix)
-    ax1.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax1, filePath)
+    location_max_pixel = np.where(positive_matrix >= max_positive_matrix)
+    ax1.annotate('Max: ('+ str(location_max_pixel[1])+',' + str(location_max_pixel[0])+')', xy=(location_max_pixel[1], location_max_pixel[0]), xytext=(location_max_pixel[1]+50, location_max_pixel[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
+    display_extra_info(ax1, file_path)
 
-    dataName = filePath[55:-4]
-    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_PosMatrix_' + actualDataTime + '.pdf'
-    fig1.savefig(fileImgName,bbox_inches='tight', dpi=600)
+    data_name = file_path[55:-4]
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_PosMatrix_' + actual_data_time + '.pdf'
+    fig1.savefig(file_image_name, bbox_inches='tight', dpi=600)
 
-    pos2 = ax2.imshow(negativeMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    #Display negative events matrix
+    pos2 = ax2.imshow(negative_matrix, cmap = 'cividis_r', interpolation = 'none', vmax = scale_maximum_value)
     fig2.colorbar(pos2, ax=ax2, shrink = 0.8)
     ax2.set_title('Negative Events Matrix')
     ax2.set_xlabel('pixels')
     ax2.set_ylabel('pixels')
-    xyMax = np.where(negativeMatrix >= MaxNegMatrix)
-    ax2.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax2, filePath)
+    location_max_pixel = np.where(negative_matrix >= max_negative_matrix)
+    ax2.annotate('Max: ('+ str(location_max_pixel[1])+',' + str(location_max_pixel[0])+')', xy=(location_max_pixel[1], location_max_pixel[0]), xytext=(location_max_pixel[1]+50, location_max_pixel[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
+    display_extra_info(ax2, file_path)
 
-    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_NegMatrix_' + actualDataTime + '.pdf'
-    fig2.savefig(fileImgName,bbox_inches='tight', dpi=600)
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_NegMatrix_' + actual_data_time + '.pdf'
+    fig2.savefig(file_image_name, bbox_inches='tight', dpi=600)
 
-    pos3 = ax3.imshow(SumMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    #Display total events matrix
+    pos3 = ax3.imshow(total_matrix, cmap = 'cividis_r', interpolation = 'none', vmax = scale_maximum_value)
     fig3.colorbar(pos3, ax=ax3, shrink = 0.8)
     ax3.set_title('Total Events Matrix')
     ax3.set_xlabel('pixels')
     ax3.set_ylabel('pixels')
-    xyMax = np.where(SumMatrix >= MaxSumMatrix)
-    ax3.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax3, filePath)
+    location_max_pixel = np.where(total_matrix >= max_total_matrix)
+    ax3.annotate('Max: ('+ str(location_max_pixel[1])+',' + str(location_max_pixel[0])+')', xy=(location_max_pixel[1], location_max_pixel[0]), xytext=(location_max_pixel[1]+50, location_max_pixel[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
+    display_extra_info(ax3, file_path)
     
-    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_TotMatrix_' + actualDataTime + '.pdf'
-    fig3.savefig(fileImgName,bbox_inches='tight', dpi=600)
-    
-    pos4 = ax4.imshow(AverageMatrix, cmap = 'cividis_r', interpolation = 'none', vmax = vMaxScale)
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_TotMatrix_' + actual_data_time + '.pdf'
+    fig3.savefig(file_image_name, bbox_inches='tight', dpi=600)
+
+    #Display average events matrix
+    pos4 = ax4.imshow(average_matrix, cmap = 'cividis_r', interpolation = 'none', vmax = scale_maximum_value)
     fig4.colorbar(pos4, ax=ax4, shrink = 0.8)
     ax4.set_title('Average Events Matrix')
     ax4.set_xlabel('pixels')
     ax4.set_ylabel('pixels')
-    xyMax = np.where(AverageMatrix >= MaxAvgMatrix)
-    ax4.annotate('Max: ('+ str(xyMax[1])+',' + str(xyMax[0])+')', xy=(xyMax[1], xyMax[0]), xytext=(xyMax[1]+50, xyMax[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
-    xyMin = np.where(AverageMatrix <= MinAvgMatrix)
+    location_max_pixel = np.where(average_matrix >= max_average_matrix)
+    ax4.annotate('Max: ('+ str(location_max_pixel[1])+',' + str(location_max_pixel[0])+')', xy=(location_max_pixel[1], location_max_pixel[0]), xytext=(location_max_pixel[1]+50, location_max_pixel[0]+50), arrowprops=dict(facecolor='black', shrink=0.025))
+    xyMin = np.where(average_matrix <= min_average_matrix)
     ax4.annotate('Min: ('+ str(xyMin[1])+',' + str(xyMin[0])+')', xy=(xyMin[1], xyMin[0]), xytext=(xyMin[1]-75, xyMin[0]-75), arrowprops=dict(facecolor='black', shrink=0.025))
-    displayExtraInfo(ax4, filePath)
+    display_extra_info(ax4, file_path)
 
-    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_AvgMatrix_' + actualDataTime + '.pdf'
-    fig4.savefig(fileImgName,bbox_inches='tight', dpi=600)
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_AvgMatrix_' + actual_data_time + '.pdf'
+    fig4.savefig(file_image_name, bbox_inches='tight', dpi=600)
     
     plt.show()
     
@@ -276,10 +276,10 @@ def displayHistoNumEvents(arrayEvents):
 def count_pixel_events(x_coord, y_coord, polarity, array):
 #Function to make an array with all the pixels in the input data file, with their total number of events.
 #The goal is to have an array that answer the question "How many events does each pixel in the input file have?"
-#Parameter x_coord : The x coordinate of the pixel.
-#Parameter y_coord : The y coordinate of the pixel.
-#Parameter polarity : The polarity of the event.
-#Parameter array : The array to store all the pixels and their events.
+#Parameter x_coord : The x coordinate of the pixel
+#Parameter y_coord : The y coordinate of the pixel
+#Parameter polarity : The polarity of the event
+#Parameter array : The array to store all the pixels and their events
 
     if( x_coord in array[:,0] ): #Look for the x coordinate of the pixel in the array
         if ( y_coord in array[:,1] ): #Look for the y coordinate of the pixel in the array
@@ -314,7 +314,7 @@ def count_pixel_events(x_coord, y_coord, polarity, array):
     
 
 def display_pixels(array, matrix, file_path, image_title):
-#Function to display desired pixels.
+#Function to display desired pixels
 
     for i in range( len( array[:,0] ) ):
         fill_matrix(matrix, array[i, 0], array[i, 1], array[i, 4])
@@ -336,10 +336,10 @@ def display_pixels(array, matrix, file_path, image_title):
     plt.show()
 
 def fill_matrix (matrix, x_coord, y_coord, value):
-#Function to put a value in a specific pixel in a matrix.
-#Parameter matrix : matrix to fill.
-#Parameter x_coord : coordinate x pixel.
-#Parameter y_coord : coordinate y pixel.
+#Function to put a value in a specific pixel in a matrix
+#Parameter matrix : matrix to fill
+#Parameter x_coord : coordinate x pixel
+#Parameter y_coord : coordinate y pixel
 
     matrix[y_coord, x_coord] = value
 
@@ -859,9 +859,9 @@ def histogram_num_events(array, bin_width, file_path):
     ax.annotate('Events Bin Width: ' + str(bin_width) + ' events', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
 
     #To save the image
-    dataName = file_path[55:-4]
-    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_HistoRealSky_' + actualDataTime + '.pdf'
-    fig.savefig(fileImgName,bbox_inches='tight', dpi=600)
+    data_name = file_path[55:-4]
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_HistoRealSky_' + actual_data_time + '.pdf'
+    fig.savefig(file_image_name,bbox_inches='tight', dpi=600)
     
     plt.show()
