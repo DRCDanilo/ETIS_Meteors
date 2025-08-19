@@ -35,15 +35,29 @@ pixel_events = np.delete(pixel_events, 0, 0)
 #Add a column to pixel_events for the number of events per time unit (e.g. events/second)
 pixel_events = np.hstack( ( pixel_events , np.zeros([len( pixel_events ), 1], dtype = float ) ) )
 
-#Filtering to just have the 6 stars
-unit_of_time = 1000000 # Parameter to have the events/second. 1000000 us = 1 s
-pixel_events = add_events_per_time(pixel_events, time_data, unit_of_time) #Add the number of events per unit of time to every pixel
-remain_pixels = direct_neighbors(pixel_events, 0.26, 3, 8, 5) #Filtering by direct neighbors
-remain_pixels = filter_array(remain_pixels, 18, 4, 1) #Filtering by number of events per unit of time
-remain_pixels = is_star(remain_pixels) #Identify is one or more pixels belong to the same star
+#Filtering process
+#Parameter to have events/second. 1000000 us = 1 s
+unit_of_time = 1000000
+
+#Add the number of events/second to every pixel
+pixel_events = add_events_per_time(pixel_events, time_data, unit_of_time)
+
+#Filtering by neighbors of the pxiels
+remain_pixels = direct_neighbors(pixel_events, 0.26, 3, 8, 5)
+
+#Filtering by number of events/second
+remain_pixels = filter_array(remain_pixels, 18, 4, 1)
+
+#Identify is one or more pixels belong to the same star
+remain_pixels = is_star(remain_pixels)
+
 remain_pixels = remain_pixels.astype(int)
+
+#Print the pixels identified as stars
 print('There are',len(remain_pixels), 'stars:')
 print(remain_pixels)
-m = np.ones((num_pixels_y + 1, num_pixels_x + 1))
+
+#Display the output image with the pixels identified as stars
+output_image = np.zeros( ( num_pixels_y + 1, num_pixels_x + 1 ) )
 image_title = 'Stars After Filtering Process'
-display_pixels(remain_pixels, m , file_path, image_title)
+display_pixels(remain_pixels, output_image, file_path, image_title)

@@ -64,10 +64,8 @@ def display_extra_info (axe, file_path):
     
     data_name = file_path[55:]
     actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    fileImgName = data_name + '_' + actual_data_time
     axe.annotate('Data file: ' + data_name, xy = (0, -25), xycoords = 'axes points', fontsize = 8)
     axe.annotate('Date: ' + actual_data_time, xy = (0, -33), xycoords = 'axes points', fontsize = 8)
-
 
 def displayHistogram(array, binWidth, filePath):
 #Function to display histogram of the input array.
@@ -94,7 +92,7 @@ def displayHistogram(array, binWidth, filePath):
     plt.grid(visible = True, color = 'r')
     ax.set_xlabel('Time [ms]')
     ax.set_ylabel('Number of events')
-    displayExtraInfo(ax, filePath)
+    display_extra_info(ax, filePath)
     ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
     
@@ -136,7 +134,7 @@ def displayBihistogram(array, binWidth, filePath):
     ax.set_ylabel('Number of events')
     ax.legend()
     #Extra info image
-    displayExtraInfo(ax, filePath)
+    display_extra_info(ax, filePath)
     ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
 
@@ -268,7 +266,7 @@ def displayHistoNumEvents(arrayEvents):
     ax.set_xlabel('Number of events')
     ax.set_ylabel('Number of pixels')
     ax.legend()
-    displayExtraInfo(ax)
+    display_extra_info(ax)
     ax.annotate('Events Bin Width: ' + str(binWidth), xy = (0, -46), xycoords = 'axes points', fontsize = 8)
     plt.show()
 
@@ -314,13 +312,20 @@ def count_pixel_events(x_coord, y_coord, polarity, array):
     
 
 def display_pixels(array, matrix, file_path, image_title):
-#Function to display desired pixels
+#The function helps to visualize the pixels of an array
+#Function to display in a matrix, the pixels of an array
+#Both the matrix and the array, are input parameters of the function
+#Parameter array : array with the pixels to display
+#Parameter matrix : matrix to display the pixels in
+#Parameter file_path : location of the data file
+#Parameter image_title : title of the image with the pixels in the input array
 
     for i in range( len( array[:,0] ) ):
-        fill_matrix(matrix, array[i, 0], array[i, 1], array[i, 4])
+        fill_matrix(matrix, array[i, 0], array[i, 1], array[i, 4]) #Put the pixels in the matrix
 
     max_value_matrix = np.max(array[:, 4])
 
+    #Display the image
     fig1, ax1 = plt.subplots()
    
     pos1 = ax1.imshow(matrix, cmap = 'cividis_r', interpolation = 'none', vmax = max_value_matrix)
@@ -328,10 +333,18 @@ def display_pixels(array, matrix, file_path, image_title):
     ax1.set_title(image_title)
     ax1.set_xlabel('pixels')
     ax1.set_ylabel('pixels')
-
-    annotate_pixels(array, ax1)
     
+    #Highlight the pixels in the matrix with an arrow next to the pixel
+    annotate_pixels(array, ax1)
+
+    #Display the date, time and file data in the image
     display_extra_info(ax1, file_path)
+
+    #Save the image
+    data_name = file_path[55:-4]
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_StarFiltering_' + actual_data_time + '.pdf'
+    fig1.savefig(file_image_name, bbox_inches='tight', dpi=600)
 
     plt.show()
 
@@ -394,7 +407,7 @@ def displayZoneHistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     plt.grid(visible = True, color = 'r')
     ax.set_xlabel('Time [ms]')
     ax.set_ylabel('Number of events')
-    displayExtraInfo(ax)
+    display_extra_info(ax)
     ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -41), xycoords = 'axes points', fontsize = 8)
     ax.annotate('Size of the zone [px]: ' + str(sizeZone) + 'x' + str(sizeZone), xy = (0, -49), xycoords = 'axes points', fontsize = 8)
     ax.annotate('First pixel of the zone: (' + str(xCoord) + ', ' + str(yCoord) + ')', xy = (0, -57), xycoords = 'axes points', fontsize = 8)
@@ -452,7 +465,7 @@ def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     ax.set_ylabel('Number of events')
     ax.legend()
     #Extra info image
-    displayExtraInfo(ax)
+    display_extra_info(ax)
     ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -41), xycoords = 'axes points', fontsize = 8)
     ax.annotate('Size of the zone [px]: ' + str(sizeZone) + 'x' + str(sizeZone), xy = (0, -49), xycoords = 'axes points', fontsize = 8)
     ax.annotate('First pixel of the zone: (' + str(xCoord) + ', ' + str(yCoord) + ')', xy = (0, -57), xycoords = 'axes points', fontsize = 8)
@@ -536,10 +549,10 @@ def direct_neighbors(array, num_min_events, num_min_neighbors, neighbors, num_co
 
 
 def is_star(array):
-#Function to identify if two or more pixels which are direct neighbors belong to a single star, and select the pixel with most events, as the star pixel.
-#The function takes every pixel in the input array, looks for all its 8 neighbors and identifies the pixel with the highest number of events as the star pixel.
-#The function returns an array with all the star pixels.
-#Parameter array : The array with the pixels to filter.
+#Function to identify if two or more pixels which are direct neighbors belong to a single star, and select the pixel with most events, as the star pixel
+#The function takes every pixel in the input array, looks for all its 8 neighbors and identifies the pixel with the highest number of events as the star pixel
+#The function returns an array with all the star pixels
+#Parameter array : The array with the pixels to filter
 
     output_array = np.zeros([1, array.shape[1]], dtype=int)
     
@@ -605,8 +618,10 @@ def is_star(array):
 
 
 def annotate_pixels(array, ax):
-#Function to make more visible the pixels of the input array, in a matrix
+#Function to highlight or make more visible the pixels of the input array, in a matrix
 #The function draws an arrow next to all the pixels in the input array
+#Parameter array : The array with the pixels
+#Parameter ax : Variable of the matplotlib figure where the matrix is
 
     for i in range( len( array[:,0] ) ) :
         ax.annotate(str(i), xy=(array[i,0]+3, array[i,1]), xytext=(array[i,0]+12, array[i,1]), arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=6))
@@ -730,8 +745,8 @@ def nan_mask(stars_array, input_matrix):
     for r in range( len( stars_array ) ):
         star_nan( stars_array[r], input_matrix )
 
-    rectangle_nan(73, 93, 456, 480, input_matrix) # NaN square for the meteor of first file meteor.csv
-    #rectangle_nan(223, 231, 306, 327, input_matrix) # NaN square for the meteor of second file meteor_003019_long.csv
+    #rectangle_nan(73, 93, 456, 480, input_matrix) # NaN square for the meteor of first file meteor.csv
+    rectangle_nan(223, 231, 306, 327, input_matrix) # NaN square for the meteor of second file meteor_003019_long.csv
 
     return input_matrix
 
@@ -828,13 +843,13 @@ def meteorCoordinatesList(x1, x2, y1, y2):
     return outputArray
 
 def histogram_num_events(array, bin_width, file_path):
-#Function to display an histogram of the total events of an input array.
-#This function was made for the analysis of the real sky's pixels.
-#By default, just the y axis is in log scale. It is necessary to uncomment some lines to have the x axis in log scale too.
-#The function also saves the image automatically in pdf format.
-#Parameter array : The array with the pixels to make the histogram of.
-#Parameter bin_width : The parameter to define the bin width of the histogram in microseconds.
-#Parameter file_path : Variable with the location of the data file.
+#Function to display an histogram of the total events of an input array
+#This function was made for the analysis of the real sky's pixels
+#By default, just the y axis is in log scale. It is necessary to uncomment some lines to have the x axis in log scale too
+#The function also saves the image automatically in pdf format
+#Parameter array : The array with the pixels to make the histogram of
+#Parameter bin_width : The parameter to define the bin width of the histogram in microseconds
+#Parameter file_path : Variable with the location of the data file
 
     #Variable to know the max number of events in the array (events of crazy pixel)
     max_event_array = max(array)
@@ -845,7 +860,7 @@ def histogram_num_events(array, bin_width, file_path):
     
     #Create the figure
     fig, ax = plt.subplots()
-    ax.hist(array[:], bins=xbins, edgecolor = 'orange') #x axis in log scale -> bins = bins_log
+    ax.hist(array[:], bins = xbins, edgecolor = 'orange') #x axis in log scale -> bins = bins_log
     plt.yscale('log') #y axis in log scale
     #plt.xscale('log') #Uncomment to have x axis in log scale
     #plot the xdata locations on the x axis:
@@ -855,7 +870,7 @@ def histogram_num_events(array, bin_width, file_path):
     plt.grid(visible = True, color = 'r')
     ax.set_xlabel('Events')
     ax.set_ylabel('Number of pixels')
-    displayExtraInfo(ax, file_path)
+    display_extra_info(ax, file_path)
     ax.annotate('Events Bin Width: ' + str(bin_width) + ' events', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
 
     #To save the image
