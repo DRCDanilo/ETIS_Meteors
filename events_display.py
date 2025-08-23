@@ -44,19 +44,19 @@ def counting_events_per_pixel (matrix, x_coord, y_coord):
 
 
 
-def save_image (file_path):
-#Function to save the image.
-
-    dataName = file_path[55:-4]
-    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
-    fileImgName = dataName + '_' + actualDataTime + '.pdf'
-
-    save_folder = "/users/danidelr86/Téléchargements/ETIS_stars/images/article_20241213T003019"
-
-    full_path = os.path.join(save_folder, fileImgName)
-    
-    #plt.savefig(full_path,bbox_inches='tight', pad_inches=0)
-    plt.savefig(fileImgName,bbox_inches='tight', dpi=600)
+##def save_image (file_path):
+###Function to save the image.
+##
+##    dataName = file_path[55:-4]
+##    actualDataTime = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+##    fileImgName = dataName + '_' + actualDataTime + '.pdf'
+##
+##    save_folder = "/users/danidelr86/Téléchargements/ETIS_stars/images/article_20241213T003019"
+##
+##    full_path = os.path.join(save_folder, fileImgName)
+##    
+##    #plt.savefig(full_path,bbox_inches='tight', pad_inches=0)
+##    plt.savefig(fileImgName,bbox_inches='tight', dpi=600)
 
 def display_extra_info (axe, file_path):
 #Function to display additional information in the bottom part of the image
@@ -67,77 +67,74 @@ def display_extra_info (axe, file_path):
     axe.annotate('Data file: ' + data_name, xy = (0, -25), xycoords = 'axes points', fontsize = 8)
     axe.annotate('Date: ' + actual_data_time, xy = (0, -33), xycoords = 'axes points', fontsize = 8)
 
-def displayHistogram(array, binWidth, filePath):
-#Function to display histogram of the input array.
-#Parameter array : The array with the pixels to make the histogram of.
-#Parameter binWidth : The parameter to define the bin width of the histogram in microseconds.
-#Parameter filePath : Variable with the location of the data file.
-
-    print('Function displayHistogram')
-    #Histogram
-    #Variable to define the bins of the histogram
-
-    #Variable to know the time of the las event
-    timeLastEvent = array[-1,-1]
-    #Build an array with the bins for the histogram
-    xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
-
-    fig, ax = plt.subplots()
-    ax.hist(array[:,-1], bins=xbins, edgecolor = 'orange')
-
-    #plot the xdata locations on the x axis:
-    ax.plot(array[:,-1], 0*array[:,2], 'd')
-
-    plt.title("Histogram of events")
-    plt.grid(visible = True, color = 'r')
-    ax.set_xlabel('Time [ms]')
-    ax.set_ylabel('Number of events')
-    display_extra_info(ax, filePath)
-    ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
-    plt.show()
+##def displayHistogram(array, binWidth, filePath):
+###Function to display histogram of the input array.
+###Parameter array : The array with the pixels to make the histogram of.
+###Parameter binWidth : The parameter to define the bin width of the histogram in microseconds.
+###Parameter filePath : Variable with the location of the data file.
+##
+##    print('Function displayHistogram')
+##    #Histogram
+##    #Variable to define the bins of the histogram
+##
+##    #Variable to know the time of the las event
+##    timeLastEvent = array[-1,-1]
+##    #Build an array with the bins for the histogram
+##    xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
+##
+##    fig, ax = plt.subplots()
+##    ax.hist(array[:,-1], bins=xbins, edgecolor = 'orange')
+##
+##    #plot the xdata locations on the x axis:
+##    ax.plot(array[:,-1], 0*array[:,2], 'd')
+##
+##    plt.title("Histogram of events")
+##    plt.grid(visible = True, color = 'r')
+##    ax.set_xlabel('Time [ms]')
+##    ax.set_ylabel('Number of events')
+##    display_extra_info(ax, filePath)
+##    ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
+##    plt.show()
     
-
-
-def displayBihistogram(array, binWidth, filePath):
-#Function to display the bi-histogram of the input array: histogram of the positive and negative events.
-#Parameter array : The array with the pixels to make the histogram of.
-#Parameter binWidth : The parameter to define the bin width of the histogram in microseconds.
-#Parameter filePath : Variable with the location of the data file.
-
-    print('Function displayHistogram')
-    #Histogram
-    #Variable to know the time of the las event
-    timeLastEvent = array[-1,-1]
-    #Build an array with the bins for the histogram
-    xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
-
-    #BiHistogram - Histogram for positive and negative events
-    fig, ax = plt.subplots()
-    #Mask for positive events
-    positiveMask = array[:,2] == 1
-    #Mask for negative events
-    negativeMask = array[:,2] == 0
-
-    #Plot the histogram for positive events
-    ax.hist(array[:,-1][positiveMask], bins=xbins, edgecolor = 'black', label = 'Positive Events')
-    #Plot the histogram for negative events
-    ax.hist(array[:,-1][negativeMask], weights = -np.ones_like(array[:,-1][negativeMask]), bins=xbins, edgecolor = 'black', label = 'Negative Events')
-
-    #Plot the data (positive and negative) along the x axis
-    #plot the xdata locations on the x axis:
-    #ax.plot(events[:,-1][positiveMask], 0*events[:,-1][positiveMask], '+', c = 'w')
-    #ax.plot(events[:,-1][negativeMask], 0*events[:,-1][negativeMask], 'o', c = 'k')
-
-    plt.title("Histogram of events")
-    plt.grid(visible = True, color = 'r')
-    ax.set_xlabel('Time [ms]')
-    ax.set_ylabel('Number of events')
-    ax.legend()
-    #Extra info image
-    display_extra_info(ax, filePath)
-    ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
-    plt.show()
-
+##def displayBihistogram(array, binWidth, filePath):
+###Function to display the bi-histogram of the input array: histogram of the positive and negative events.
+###Parameter array : The array with the pixels to make the histogram of.
+###Parameter binWidth : The parameter to define the bin width of the histogram in microseconds.
+###Parameter filePath : Variable with the location of the data file.
+##
+##    print('Function displayHistogram')
+##    #Histogram
+##    #Variable to know the time of the las event
+##    timeLastEvent = array[-1,-1]
+##    #Build an array with the bins for the histogram
+##    xbins = np.arange(0, (timeLastEvent + binWidth), binWidth)
+##
+##    #BiHistogram - Histogram for positive and negative events
+##    fig, ax = plt.subplots()
+##    #Mask for positive events
+##    positiveMask = array[:,2] == 1
+##    #Mask for negative events
+##    negativeMask = array[:,2] == 0
+##
+##    #Plot the histogram for positive events
+##    ax.hist(array[:,-1][positiveMask], bins=xbins, edgecolor = 'black', label = 'Positive Events')
+##    #Plot the histogram for negative events
+##    ax.hist(array[:,-1][negativeMask], weights = -np.ones_like(array[:,-1][negativeMask]), bins=xbins, edgecolor = 'black', label = 'Negative Events')
+##
+##    #Plot the data (positive and negative) along the x axis
+##    #plot the xdata locations on the x axis:
+##    #ax.plot(events[:,-1][positiveMask], 0*events[:,-1][positiveMask], '+', c = 'w')
+##    #ax.plot(events[:,-1][negativeMask], 0*events[:,-1][negativeMask], 'o', c = 'k')
+##
+##    plt.title("Histogram of events")
+##    plt.grid(visible = True, color = 'r')
+##    ax.set_xlabel('Time [ms]')
+##    ax.set_ylabel('Number of events')
+##    ax.legend()
+##    #Extra info image
+##    display_extra_info(ax, filePath)
+##    ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -46), xycoords = 'axes points', fontsize = 8)
+##    plt.show()
 
 def display_4_matrices(positive_matrix, negative_matrix, file_path):
 #Function to display the 4 matrices of the data:
@@ -244,33 +241,6 @@ def display_4_matrices(positive_matrix, negative_matrix, file_path):
     
     plt.show()
     
-def displayHistoNumEvents(arrayEvents):
-#Function to display the number of events histogram of the image.
-#Could be the positive or negative histogram.
-    print('Function displayHistogramPositiveE. Display an array (positive or negative events) as histogram.')
-    #Histogram
-    #Variable to define the bins of the histogram
-    binWidth = 10
-    #Build an array with the bins for the histogram
-    xbins = np.arange(0, (max(arrayEvents[:,-1]) + binWidth), binWidth)
-    
-
-    fig, ax = plt.subplots()
-    ax.hist(histoPositiveEvents[:,2], bins=xbins, edgecolor = 'orange')
-
-    #plot the xdata locations on the x axis:
-    ax.plot(arrayEvents[:,2], np.zeros_like(arrayEvents[:,2]), 'd', label = 'Data Points')
-
-    plt.title("Histogram of Image's Number of Events")
-    plt.grid(visible = True, color = 'r')
-    ax.set_xlabel('Number of events')
-    ax.set_ylabel('Number of pixels')
-    ax.legend()
-    display_extra_info(ax)
-    ax.annotate('Events Bin Width: ' + str(binWidth), xy = (0, -46), xycoords = 'axes points', fontsize = 8)
-    plt.show()
-
-
 def count_pixel_events(x_coord, y_coord, polarity, array):
 #Function to make an array with all the pixels in the input data file, with their total number of events.
 #The goal is to have an array that answer the question "How many events does each pixel in the input file have?"
@@ -372,30 +342,28 @@ def filter_array(array, value, event_type, condition):
         mask = array[:, event_type + 1 ] < value
         return array[mask]
 
-
-def displayZoneHistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
-#Function to display histogram with parameters as time and zone of the image.
-#Parameter binwidth : Define the bin width for the histogram
-#Parameter timeStop : Time limit to display the histogram
-#Parameter xCoord : x coordinate of the top leftmost pixel of the selected zone
-#Parameter yCoord : y coordinate of the top leftmost pixel of the selected zone
-#Parameter sizeZone : Size in pixels of one side of the selected zone. eg 30x30 zone, sizeZone = 30
-#Parameter title : Beginning of the figure title. eg if title is = 'star', the figure title will be "star Histogram Events" 
-    print('Function displayZoneHistogram')
-    #Variable to define the bins of the histogram
-    binWidth = binwidth
+def zone_histogram(array, bin_width, time_stop, x_coord, y_coord, size_zone, image_title, file_path):
+#Function to display a histogram of the pixels of a specific zone of the image and for a specific time duration
+#Parameter array : Array with the events 
+#Parameter bin_width : Define the bin width for the histogram
+#Parameter time_stop : Time limit to display the histogram
+#Parameter x_coord : x coordinate of the top leftmost pixel of the desired zone
+#Parameter y_coord : y coordinate of the top leftmost pixel of the desired zone
+#Parameter size_zone : Size in pixels of one side of the desired zone, e.g. 30x30 zone, size_zone = 30
+#Parameter image_title : Beginning of the image title. e.g. if image_title is = 'star', the imag title will be "star Histogram Events"
+#Parameter file_path : Variable with the location of the data file
+    
     #Filter the events by time
-    mask = events[:, -1] <= timeStop
-    selectedEvents = events[mask]
+    mask = array[:, -1] <= time_stop
+    selectedEvents = array[mask]
     #Filter events by zone of the image
-    mask = ( selectedEvents[:, 0] >= xCoord ) & (selectedEvents[:, 0] <= (xCoord + (sizeZone - 1)) ) & ( selectedEvents[:,1] >= yCoord ) & (selectedEvents[:,1] <= (yCoord + (sizeZone - 1)) )
+    mask = ( selectedEvents[:, 0] >= x_coord ) & (selectedEvents[:, 0] <= (x_coord + (size_zone - 1)) ) & ( selectedEvents[:,1] >= y_coord ) & (selectedEvents[:,1] <= (y_coord + (size_zone - 1)) )
     selectedEvents = selectedEvents[mask]
 
     #Variable to know the time of the las event
     timeLastEvent = selectedEvents[-1,-1]
     #Build an array with the bins for the histogram
-    #xbins = np.arange(0, (timeLastEvent + binWidth), binWidth) # This line works ok for the histogram until the time of last event
-    xbins = np.arange(0, timeStop, binWidth) # This line is a test to have the histogram until the time stop no matter the presence of events
+    xbins = np.arange(0, (timeLastEvent + bin_width), bin_width) # This line works ok for the histogram until the time of last event
 
     fig, ax = plt.subplots()
     ax.hist(selectedEvents[:,-1], bins=xbins, edgecolor = 'black')
@@ -403,16 +371,22 @@ def displayZoneHistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
     #plot the xdata locations on the x axis:
     ax.plot(selectedEvents[:,-1], 0*selectedEvents[:,2], 'd', label = 'Data Points')
 
-    plt.title(title + " Histogram Events")
+    plt.title(image_title + " Histogram Events")
     plt.grid(visible = True, color = 'r')
-    ax.set_xlabel('Time [ms]')
+    ax.set_xlabel('Time [us]')
     ax.set_ylabel('Number of events')
-    display_extra_info(ax)
-    ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -41), xycoords = 'axes points', fontsize = 8)
-    ax.annotate('Size of the zone [px]: ' + str(sizeZone) + 'x' + str(sizeZone), xy = (0, -49), xycoords = 'axes points', fontsize = 8)
-    ax.annotate('First pixel of the zone: (' + str(xCoord) + ', ' + str(yCoord) + ')', xy = (0, -57), xycoords = 'axes points', fontsize = 8)
+    display_extra_info(ax, file_path)
+    ax.annotate('Time Bin Width: ' + str(bin_width) + ' us', xy = (0, -41), xycoords = 'axes points', fontsize = 8)
+    ax.annotate('Size of the zone [px]: ' + str(size_zone) + 'x' + str(size_zone), xy = (0, -49), xycoords = 'axes points', fontsize = 8)
+    ax.annotate('First pixel of the zone: (' + str(x_coord) + ', ' + str(y_coord) + ')', xy = (0, -57), xycoords = 'axes points', fontsize = 8)
     ax.legend()
-    #plt.show()
+
+    data_name = file_path[55:-4]
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_' + image_title + '_ZoneHistogram_' + actual_data_time + '.pdf'
+    fig.savefig(file_image_name, bbox_inches='tight', dpi=600)
+
+    plt.show()
 
 
 
@@ -626,50 +600,46 @@ def annotate_pixels(array, ax):
     for i in range( len( array[:,0] ) ) :
         ax.annotate(str(i), xy=(array[i,0]+3, array[i,1]), xytext=(array[i,0]+12, array[i,1]), arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=6))
 
-def continuity(array, e):
-#Function to analyze along the time an array and determine if here is continuity of events.
-#The function look for continuity in the array, that means look for a number of events in the array. The number of events is determined by the parameter e.
-#Parameter array : The array to analyze
-#Parameter e : The minimum number of events in the array to have continuity
+##def continuity(array, e):
+###Function to analyze along the time an array and determine if here is continuity of events.
+###The function look for continuity in the array, that means look for a number of events in the array. The number of events is determined by the parameter e.
+###Parameter array : The array to analyze
+###Parameter e : The minimum number of events in the array to have continuity
+##
+##    if( len(array) >= e ):
+##        return True
+##    return None
 
-    if( len(array) >= e ):
-        return True
-    return None
-
-
-
-def continuousStar(array, interval, timeStop, level):
-#Function to identify a star looking for the continuity of the events in a time interval.
-#Parameter array : The array where the possible stars are.
-#Parameter interval : The time interval to evaluate the continuity of the events.
-#Parameter timeStop : The time limit to look for the continuity of the events.
-#Parameter level : The minimum number of evidences to consider a pixel a star.
-
-    windows = np.ceil(timeStop / interval) # Number of time windows to make the filtering
-    outputArray = np.zeros([1, 5], dtype = int) # Output array
-
-    for i in range( len (array[:, 0]) ): # Go through the input array
-        index = np.where( ( events[:, 0] == array[i, 0] ) & ( events[:, 1] == array[i, 1] ) ) # Find pixel events in all the events data
-        onePixelIndexs = np.array(index) # Convert to array the tuple with the indices of the pixel events
-        onePixelEvents = np.take(events, onePixelIndexs, axis=0) # Extract only the events of the pixel from all events data
-        onePixelEvents = np.reshape(onePixelEvents,(onePixelEvents.shape[1],onePixelEvents.shape[2])) # Build the array (nx4) of the pixel events
-        onePixelEvents[: , -1] -= min(onePixelEvents[:,  -1]) # Start the pixel events from t = 0
-
-        proofs = 0
-        for j in range(int(windows)): # Go through the windows or time intervals
-            mask = ( ( (onePixelEvents[:, -1]) >= (j * interval) ) & ( (onePixelEvents[:, -1]) < ( (j + 1) * interval ) ) ) # Select only the events in the time interval
-            pixelsSliced = onePixelEvents[mask] # Array with the events in the time interval
-            # Function to analyze the pixels in the time interval
-            mark = continuity(pixelsSliced, 2)
-            if mark: # If the array in the time interval corresponds to a star
-                proofs = proofs + 1
-        if proofs >= level:
-            outputArray = np.vstack((outputArray, array[i]))
-
-    outputArray = np.delete(outputArray, 0, 0)
-    return outputArray
-
-
+##def continuousStar(array, interval, timeStop, level):
+###Function to identify a star looking for the continuity of the events in a time interval.
+###Parameter array : The array where the possible stars are.
+###Parameter interval : The time interval to evaluate the continuity of the events.
+###Parameter timeStop : The time limit to look for the continuity of the events.
+###Parameter level : The minimum number of evidences to consider a pixel a star.
+##
+##    windows = np.ceil(timeStop / interval) # Number of time windows to make the filtering
+##    outputArray = np.zeros([1, 5], dtype = int) # Output array
+##
+##    for i in range( len (array[:, 0]) ): # Go through the input array
+##        index = np.where( ( events[:, 0] == array[i, 0] ) & ( events[:, 1] == array[i, 1] ) ) # Find pixel events in all the events data
+##        onePixelIndexs = np.array(index) # Convert to array the tuple with the indices of the pixel events
+##        onePixelEvents = np.take(events, onePixelIndexs, axis=0) # Extract only the events of the pixel from all events data
+##        onePixelEvents = np.reshape(onePixelEvents,(onePixelEvents.shape[1],onePixelEvents.shape[2])) # Build the array (nx4) of the pixel events
+##        onePixelEvents[: , -1] -= min(onePixelEvents[:,  -1]) # Start the pixel events from t = 0
+##
+##        proofs = 0
+##        for j in range(int(windows)): # Go through the windows or time intervals
+##            mask = ( ( (onePixelEvents[:, -1]) >= (j * interval) ) & ( (onePixelEvents[:, -1]) < ( (j + 1) * interval ) ) ) # Select only the events in the time interval
+##            pixelsSliced = onePixelEvents[mask] # Array with the events in the time interval
+##            # Function to analyze the pixels in the time interval
+##            mark = continuity(pixelsSliced, 2)
+##            if mark: # If the array in the time interval corresponds to a star
+##                proofs = proofs + 1
+##        if proofs >= level:
+##            outputArray = np.vstack((outputArray, array[i]))
+##
+##    outputArray = np.delete(outputArray, 0, 0)
+##    return outputArray
 
 def calculate_events_per_time(number_total_events, total_time_data, unit_of_time):
 #Function to calculate the number of events per unit of time, of one pixel.
@@ -798,49 +768,49 @@ def get_parameters(array):
 #Parameter array : The array with the pixels to identify the trajectory of.
 
 
-# Function to identify a pixel alone without neighbors pixels and delete it form an array.
-def noPixelAlone(array):
-# Parameter array : The array with the pixels to identify the pixels alone of.
+##def noPixelAlone(array):
+### Function to identify a pixel alone without neighbors pixels and delete it form an array.
+### Parameter array : The array with the pixels to identify the pixels alone of.
+##
+##    outputArray = np.zeros([1, array.shape[1]], dtype=int)
+##    # for i in range( len( array[:, 0] ) ):
+##    #     for j in range( 8 ):
 
-    outputArray = np.zeros([1, array.shape[1]], dtype=int)
-    # for i in range( len( array[:, 0] ) ):
-    #     for j in range( 8 ):
+##def starCoordinatesList(array):
+###Function to make a list with the coordinates of the stars and their 8 direct neighbors, who are in the array input of this function.
+###Parameter array : The array with the pixels of the stars.
+##
+##    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
+##
+##    for i in range( len(array) ): #Go through the input array.
+##        outputArray = np.vstack((outputArray, np.array([array[i,0], array[i,1]]))) #Add the star coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] - 1]))) #Add the neighbor above coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] - 1]))) #Add the upper right side neighbor coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1]]))) #Add the right neighbor coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] + 1]))) #Add the lower right side neighbor coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] + 1])))  #Add the neighbor below coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] + 1])))  #Add the lower left side neighbor coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1]])))  # Add the left neighbor coordinate to the output array.
+##        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] - 1])))  # Add the upper left side neighbor coordinate to the output array.
+##
+##    outputArray = np.delete(outputArray, 0, 0) #Delete the first row because it is [0,0].
+##    return outputArray
 
-def starCoordinatesList(array):
-#Function to make a list with the coordinates of the stars and their 8 direct neighbors, who are in the array input of this function.
-#Parameter array : The array with the pixels of the stars.
-
-    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
-
-    for i in range( len(array) ): #Go through the input array.
-        outputArray = np.vstack((outputArray, np.array([array[i,0], array[i,1]]))) #Add the star coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] - 1]))) #Add the neighbor above coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] - 1]))) #Add the upper right side neighbor coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1]]))) #Add the right neighbor coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0] + 1, array[i, 1] + 1]))) #Add the lower right side neighbor coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0], array[i, 1] + 1])))  #Add the neighbor below coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] + 1])))  #Add the lower left side neighbor coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1]])))  # Add the left neighbor coordinate to the output array.
-        outputArray = np.vstack((outputArray, np.array([array[i, 0] - 1, array[i, 1] - 1])))  # Add the upper left side neighbor coordinate to the output array.
-
-    outputArray = np.delete(outputArray, 0, 0) #Delete the first row because it is [0,0].
-    return outputArray
-
-def meteorCoordinatesList(x1, x2, y1, y2):
-#Function to make a list with the coordinates of the rectangle where the meteor's trajectory is.
-#Parameter x1 : The x coordinate where the rectangle starts.
-#Parameter x2 : The x coordinate where the rectangle ends.
-#Parameter y1 : The y coordinate where the rectangle starts.
-#Parameter y2 : The y coordinate where the rectangle ends.
-
-    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
-
-    for j in range((y2-y1)+1):
-        for i in range((x2-x1)+1):
-            outputArray = np.vstack((outputArray, np.array([i+x1, j+y1]))) #Add the coordinate to the output array.
-
-    outputArray = np.delete(outputArray, 0, 0)  # Delete the first row because it is [0,0].
-    return outputArray
+##def meteorCoordinatesList(x1, x2, y1, y2):
+###Function to make a list with the coordinates of the rectangle where the meteor's trajectory is.
+###Parameter x1 : The x coordinate where the rectangle starts.
+###Parameter x2 : The x coordinate where the rectangle ends.
+###Parameter y1 : The y coordinate where the rectangle starts.
+###Parameter y2 : The y coordinate where the rectangle ends.
+##
+##    outputArray = np.zeros([1,2], dtype=int) #Create the output array.
+##
+##    for j in range((y2-y1)+1):
+##        for i in range((x2-x1)+1):
+##            outputArray = np.vstack((outputArray, np.array([i+x1, j+y1]))) #Add the coordinate to the output array.
+##
+##    outputArray = np.delete(outputArray, 0, 0)  # Delete the first row because it is [0,0].
+##    return outputArray
 
 def histogram_num_events(array, bin_width, file_path):
 #Function to display an histogram of the total events of an input array
