@@ -355,21 +355,21 @@ def zone_histogram(array, bin_width, time_stop, x_coord, y_coord, size_zone, ima
     
     #Filter the events by time
     mask = array[:, -1] <= time_stop
-    selectedEvents = array[mask]
+    selected_events = array[mask]
     #Filter events by zone of the image
-    mask = ( selectedEvents[:, 0] >= x_coord ) & (selectedEvents[:, 0] <= (x_coord + (size_zone - 1)) ) & ( selectedEvents[:,1] >= y_coord ) & (selectedEvents[:,1] <= (y_coord + (size_zone - 1)) )
-    selectedEvents = selectedEvents[mask]
+    mask = ( selected_events[:, 0] >= x_coord ) & (selected_events[:, 0] <= (x_coord + (size_zone - 1)) ) & ( selected_events[:,1] >= y_coord ) & (selected_events[:,1] <= (y_coord + (size_zone - 1)) )
+    selected_events = selected_events[mask]
 
     #Variable to know the time of the las event
-    timeLastEvent = selectedEvents[-1,-1]
+    time_last_event = selected_events[-1,-1]
     #Build an array with the bins for the histogram
-    xbins = np.arange(0, (timeLastEvent + bin_width), bin_width) # This line works ok for the histogram until the time of last event
+    xbins = np.arange(0, (time_last_event + bin_width), bin_width) # This line works ok for the histogram until the time of last event
 
     fig, ax = plt.subplots()
-    ax.hist(selectedEvents[:,-1], bins=xbins, edgecolor = 'black')
+    ax.hist(selected_events[:,-1], bins=xbins, edgecolor = 'black')
 
     #plot the xdata locations on the x axis:
-    ax.plot(selectedEvents[:,-1], 0*selectedEvents[:,2], 'd', label = 'Data Points')
+    ax.plot(selected_events[:,-1], 0*selected_events[:,2], 'd', label = 'Data Points')
 
     plt.title(image_title + " Histogram Events")
     plt.grid(visible = True, color = 'r')
@@ -381,6 +381,7 @@ def zone_histogram(array, bin_width, time_stop, x_coord, y_coord, size_zone, ima
     ax.annotate('First pixel of the zone: (' + str(x_coord) + ', ' + str(y_coord) + ')', xy = (0, -57), xycoords = 'axes points', fontsize = 8)
     ax.legend()
 
+    #Save the image
     data_name = file_path[55:-4]
     actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
     file_image_name = data_name + '_' + image_title + '_ZoneHistogram_' + actual_data_time + '.pdf'
