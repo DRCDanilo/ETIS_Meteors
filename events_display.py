@@ -363,7 +363,7 @@ def zone_histogram(array, bin_width, time_stop, x_coord, y_coord, size_zone, ima
     #Variable to know the time of the las event
     time_last_event = selected_events[-1,-1]
     #Build an array with the bins for the histogram
-    xbins = np.arange(0, (time_last_event + bin_width), bin_width) # This line works ok for the histogram until the time of last event
+    xbins = np.arange(0, (time_last_event + bin_width), bin_width)
 
     fig, ax = plt.subplots()
     ax.hist(selected_events[:,-1], bins=xbins, edgecolor = 'black')
@@ -391,62 +391,63 @@ def zone_histogram(array, bin_width, time_stop, x_coord, y_coord, size_zone, ima
 
 
 
-def displayZoneBihistogram(binwidth, timeStop, xCoord, yCoord, sizeZone, title):
-#Function to display bihistogram with parameters as time and zone of the image: histogram of positive and negative events.
-#Parameter binwidth : Define the bin width for the histogram
-#Parameter timeStop : Time limit to display the histogram
-#Parameter xCoord : x coordinate of the top leftmost pixel of the selected zone
-#Parameter yCoord : y coordinate of the top leftmost pixel of the selected zone
-#Parameter sizeZone : Size in pixels of one side of the selected zone. eg 30x30 zone, sizeZone = 30
-#Parameter title : Beginning of the figure title. eg if title is = 'star', the figure title will be "star Bi-Histogram Events"
-    print('Function displayZoneBihistogram')
-    #Histogram
-    #Variable to define the bins of the histogram
-    binWidth = binwidth
+def zone_double_histogram(array, bin_width, time_stop, x_coord, y_coord, size_zone, image_title, file_path):
+#Function to display a bihistogram of the pixels of a specific zone of the image and for a specific time duration
+#Parameter array : Array with the events 
+#Parameter bin_width : Define the bin width for the histogram
+#Parameter time_stop : Time limit to display the histogram
+#Parameter x_coord : x coordinate of the top leftmost pixel of the desired zone
+#Parameter y_coord : y coordinate of the top leftmost pixel of the desired zone
+#Parameter size_zone : Size in pixels of one side of the desired zone, e.g. 30x30 zone, size_zone = 30
+#Parameter image_title : Beginning of the image title. e.g. if image_title is = 'star', the imag title will be "star Histogram Events"
+#Parameter file_path : Variable with the location of the data file
+
     #Filter the events by time
-    mask = events[:, -1] <= timeStop
-    selectedEvents = events[mask]
+    mask = array[:, -1] <= time_stop
+    selected_events = array[mask]
     #Filter events by zone of the image
-    mask = ( selectedEvents[:, 0] >= xCoord ) & (selectedEvents[:, 0] <= (xCoord + (sizeZone - 1)) ) & ( selectedEvents[:,1] >= yCoord ) & (selectedEvents[:,1] <= (yCoord + (sizeZone - 1)) )
-    selectedEvents = selectedEvents[mask]
+    mask = ( selected_events[:, 0] >= x_coord ) & (selected_events[:, 0] <= (x_coord + (size_zone - 1)) ) & ( selected_events[:,1] >= y_coord ) & (selected_events[:,1] <= (y_coord + (size_zone - 1)) )
+    selected_events = selected_events[mask]
 
     #Variable to know the time of the las event
-    timeLastEvent = selectedEvents[-1,-1]
+    time_last_event = selected_events[-1,-1]
     #Build an array with the bins for the histogram
-    #xbins = np.arange(0, (timeLastEvent + binWidth), binWidth) # This line works ok for the histogram until the time of last event
-    xbins = np.arange(0, timeStop, binWidth) # This line is a test to have the histogram until the time stop no matter the presence of events
-    
+    xbins = np.arange(0, (time_last_event + bin_width), bin_width)
     
     #Mask for positive events
-    positiveMask = selectedEvents[:,2] == 1
+    positive_mask = selected_events[:,2] == 1
     #Mask for negative events
-    negativeMask = selectedEvents[:,2] == 0
+    negative_mask = selected_events[:,2] == 0
 
     #BiHistogram - Histogram for positive and negative events
     fig, ax = plt.subplots()
     #Plot the histogram for positive events
-    ax.hist(selectedEvents[:,-1][positiveMask], bins=xbins, edgecolor = 'black', label = 'Positive Events')
+    ax.hist(selected_events[:,-1][positive_mask], bins=xbins, edgecolor = 'black', label = 'Positive Events')
     #Plot the histogram for negative events
-    ax.hist(selectedEvents[:,-1][negativeMask], weights = -np.ones_like(selectedEvents[:,-1][negativeMask]), bins=xbins, edgecolor = 'black', label = 'Negative Events')
+    ax.hist(selected_events[:,-1][negative_mask], weights = -np.ones_like(selected_events[:,-1][negative_mask]), bins=xbins, edgecolor = 'black', label = 'Negative Events')
 
     #Plot the data (positive and negative) along the x axis
     #plot the xdata locations on the x axis:
-    ax.plot(selectedEvents[:,-1][positiveMask], 0*selectedEvents[:,-1][positiveMask], '+', c = 'g', label = 'Positive Data Points')
-    ax.plot(selectedEvents[:,-1][negativeMask], 0*selectedEvents[:,-1][negativeMask], 'o', c = 'k', label = 'Negative Data Points')
+    ax.plot(selected_events[:,-1][positive_mask], 0*selected_events[:,-1][positive_mask], '+', c = 'g', label = 'Positive Data Points')
+    ax.plot(selected_events[:,-1][negative_mask], 0*selected_events[:,-1][negative_mask], 'o', c = 'k', label = 'Negative Data Points')
 
-    plt.title(title + " Bi-Histogram Events")
+    plt.title(image_title + " Bi-Histogram Events")
     plt.grid(visible = True, color = 'r')
-    ax.set_xlabel('Time [ms]')
+    ax.set_xlabel('Time [us]')
     ax.set_ylabel('Number of events')
+    display_extra_info(ax, file_path)
+    ax.annotate('Time Bin Width: ' + str(bin_width) + ' us', xy = (0, -41), xycoords = 'axes points', fontsize = 8)
+    ax.annotate('Size of the zone [px]: ' + str(size_zone) + 'x' + str(size_zone), xy = (0, -49), xycoords = 'axes points', fontsize = 8)
+    ax.annotate('First pixel of the zone: (' + str(x_coord) + ', ' + str(y_coord) + ')', xy = (0, -57), xycoords = 'axes points', fontsize = 8)
     ax.legend()
-    #Extra info image
-    display_extra_info(ax)
-    ax.annotate('Time Bin Width: ' + str(binWidth) + ' ms', xy = (0, -41), xycoords = 'axes points', fontsize = 8)
-    ax.annotate('Size of the zone [px]: ' + str(sizeZone) + 'x' + str(sizeZone), xy = (0, -49), xycoords = 'axes points', fontsize = 8)
-    ax.annotate('First pixel of the zone: (' + str(xCoord) + ', ' + str(yCoord) + ')', xy = (0, -57), xycoords = 'axes points', fontsize = 8)
-    #plt.show()
 
+    #Save the image
+    data_name = file_path[55:-4]
+    actual_data_time = str(datetime.now().strftime('%Y-%m-%d %H_%M_%S'))
+    file_image_name = data_name + '_' + image_title + '_ZoneBihistogram_' + actual_data_time + '.pdf'
+    fig.savefig(file_image_name, bbox_inches='tight', dpi=600)
 
+    plt.show()
 
 def direct_neighbors(array, num_min_events, num_min_neighbors, neighbors, num_column):
 #Function to filter pixels by their neighbors pixels with a num_min_events number of events

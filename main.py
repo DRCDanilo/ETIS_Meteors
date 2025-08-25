@@ -63,4 +63,4 @@ pixel_events = np.zeros([1, 5], dtype = int)
 ##image_title = 'Meteors After Filtering Process'
 ##display_pixels(remain_pixels, output_image, file_path, image_title)
 
-zone_histogram(events, 20000, 1000000, 391, 438, 3, 'Procyon', file_path)
+zone_double_histogram(events, 20000, 1000000, 391, 438, 3, 'Procyon', file_path)
